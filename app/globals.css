@@ -1,0 +1,334 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Tech-Noir Theme */
+  --background: #000000;
+  --foreground: #F5F5F5;
+  --card: #121212;
+  --card-foreground: #F5F5F5;
+  --popover: #0a0a0a;
+  --popover-foreground: #F5F5F5;
+  --primary: #D1FF00;
+  --primary-foreground: #000000;
+  --secondary: #000033;
+  --secondary-foreground: #ffffff;
+  --muted: #1e1e1e;
+  --muted-foreground: #A0A0A0;
+  --accent: #222222;
+  --accent-foreground: #D1FF00;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(209, 255, 0, 0.2);
+  --input: rgba(209, 255, 0, 0.1);
+  --ring: #D1FF00;
+  --radius: 0rem; /* sharper edges */
+  
+  /* Custom glow colors */
+  --glow-primary: #D1FF00;
+  --glow-secondary: #000033;
+  --glow-accent: #222222;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap');
+  font-display: swap;
+}
+
+@theme inline {
+  --font-sans: 'Inter', 'Satoshi', system-ui, sans-serif;
+  --font-mono: var(--font-mono), 'Geist Mono', monospace;
+  --font-display: 'Inter', 'Satoshi', system-ui, sans-serif;
+  --font-anton: var(--font-anton), sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-glitch-1: glitch-1 0.2s infinite;
+  --animate-glitch-2: glitch-2 0.3s infinite;
+
+  @keyframes glitch-1 {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+  }
+
+  @keyframes glitch-2 {
+    0% { transform: translate(0); }
+    20% { transform: translate(2px, -2px); }
+    40% { transform: translate(2px, 2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(-2px, 2px); }
+    100% { transform: translate(0); }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-[#000000] text-foreground antialiased;
+    background-image: 
+      radial-gradient(ellipse 80% 80% at 50% -20%, rgba(209, 255, 0, 0.05), transparent),
+      radial-gradient(ellipse 50% 50% at 80% 50%, rgba(0, 0, 51, 0.08), transparent);
+  }
+  
+  ::selection {
+    background: rgba(209, 255, 0, 0.4);
+    color: #000000;
+  }
+}
+
+/* Noise texture overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Grid overlay */
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  background-image: 
+    linear-gradient(rgba(209, 255, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(209, 255, 0, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(18, 18, 18, 0.75);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(209, 255, 0, 0.2);
+}
+
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(209, 255, 0, 0.05) 0%,
+    rgba(18, 18, 18, 0.8) 50%,
+    rgba(0, 0, 51, 0.1) 100%
+  );
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(209, 255, 0, 0.15);
+}
+
+/* Glow effects */
+.glow-primary {
+  box-shadow: 
+    0 0 20px rgba(209, 255, 0, 0.3),
+    0 0 40px rgba(209, 255, 0, 0.2),
+    0 0 60px rgba(209, 255, 0, 0.1);
+}
+
+.glow-secondary {
+  box-shadow: 
+    0 0 20px rgba(0, 0, 51, 0.3),
+    0 0 40px rgba(0, 0, 51, 0.2),
+    0 0 60px rgba(0, 0, 51, 0.1);
+}
+
+.text-glow {
+  text-shadow: 
+    0 0 20px rgba(209, 255, 0, 0.5),
+    0 0 40px rgba(209, 255, 0, 0.3);
+}
+
+/* Animated gradient border */
+.gradient-border {
+  position: relative;
+  background: linear-gradient(#000000, #000000) padding-box,
+    linear-gradient(135deg, #D1FF00, #000033, #A0A0A0) border-box;
+  border: 1px solid transparent;
+}
+
+/* Magnetic button effect */
+.magnetic-btn {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Spotlight effect */
+.spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight::before {
+  content: '';
+  position: absolute;
+  top: var(--mouse-y, 50%);
+  left: var(--mouse-x, 50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(209, 255, 0, 0.15) 0%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Scroll progress indicator */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #D1FF00, #A0A0A0);
+  z-index: 9999;
+  transform-origin: left;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D1FF00, #A0A0A0);
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #A0A0A0, #D1FF00);
+}
+
+/* Text gradient */
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-primary {
+  background: linear-gradient(135deg, #D1FF00 0%, #A0A0A0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Pulse glow animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(209, 255, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(209, 255, 0, 0.6), 0 0 60px rgba(209, 255, 0, 0.3);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Gradient orb animation */
+@keyframes orb-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(20px, -30px) scale(1.05);
+  }
+  50% {
+    transform: translate(-10px, -50px) scale(1);
+  }
+  75% {
+    transform: translate(-30px, -20px) scale(0.95);
+  }
+}
+
+.animate-orb {
+  animation: orb-float 15s ease-in-out infinite;
+}
+
+/* Reveal animation */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-reveal {
+  animation: reveal 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Tilt effect for cards */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
