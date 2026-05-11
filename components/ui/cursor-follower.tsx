@@ -24,9 +24,11 @@ export function CursorFollower() {
   }, [])
 
   useEffect(() => {
-    if (!mounted || isTouchDevice) return
+    if (!mounted) return
 
     const handleMouseMove = (e: MouseEvent) => {
+      // If we detect mouse movement, it's not a restricted touch device
+      if (isTouchDevice) setIsTouchDevice(false)
       cursorX.set(e.clientX)
       cursorY.set(e.clientY)
       setIsVisible(true)
