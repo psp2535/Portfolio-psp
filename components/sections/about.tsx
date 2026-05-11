@@ -69,18 +69,15 @@ export function About() {
   const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
   const spotlightBg = useTransform(
     [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.15), transparent 80%)`
+    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
   )
 
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (!ref.current) return
       const rect = ref.current.getBoundingClientRect()
-      // Only update if mouse is within a reasonable range of the section
-      if (e.clientY >= rect.top - 500 && e.clientY <= rect.bottom + 500) {
-        mouseX.set(e.clientX - rect.left)
-        mouseY.set(e.clientY - rect.top)
-      }
+      mouseX.set(e.clientX - rect.left)
+      mouseY.set(e.clientY - rect.top)
     }
 
     window.addEventListener('mousemove', handleGlobalMouseMove)
@@ -93,9 +90,9 @@ export function About() {
       className="relative pt-48 pb-32 bg-black overflow-hidden"
       ref={ref}
     >
-      {/* Dynamic Global Spotlight Layer */}
+      {/* Dynamic Global Spotlight Layer - Force Visibility */}
       <motion.div
-        className="absolute inset-0 z-[5] pointer-events-none"
+        className="absolute inset-0 z-[50] pointer-events-none opacity-100"
         style={{ background: spotlightBg }}
       />
 
