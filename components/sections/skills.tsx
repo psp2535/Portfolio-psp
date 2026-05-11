@@ -76,7 +76,7 @@ export function Skills() {
 
   const spotlightBg = useTransform(
     [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 350px at ${x}px ${y}px, rgba(209, 255, 0, 0.1), transparent 80%)`
+    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.15), transparent 80%)`
   )
 
   const rotateX = useTransform(spotlightY, [0, 1000], [5, -5])
@@ -93,7 +93,7 @@ export function Skills() {
         <>
           {/* Dynamic Global Spotlight Layer */}
           <motion.div
-            className="absolute inset-0 z-0 pointer-events-none"
+            className="absolute inset-0 z-[5] pointer-events-none"
             style={{ background: spotlightBg }}
           />
 

@@ -48,7 +48,7 @@ export function Contact() {
   
   const spotlightBg = useTransform(
     [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.08), transparent 80%)`
+    ([x, y]) => `radial-gradient(circle 600px at ${x}px ${y}px, rgba(209, 255, 0, 0.15), transparent 80%)`
   )
 
   const rotateX = useTransform(spotlightY, [0, 1000], [3, -3])
@@ -78,7 +78,7 @@ export function Contact() {
     >
       {/* Dynamic Global Spotlight Layer */}
       <motion.div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="absolute inset-0 z-[5] pointer-events-none"
         style={{ background: spotlightBg }}
       />
 

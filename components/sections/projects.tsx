@@ -104,7 +104,7 @@ function ProjectCard({ project, index, isInView }: {
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
-          background: `radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${project.hoverColor}15, transparent 80%)`,
+          background: `radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${project.hoverColor}25, transparent 80%)`,
         }}
       />
 
@@ -214,7 +214,7 @@ export function Projects() {
   
   const spotlightBg = useTransform(
     [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 450px at ${x}px ${y}px, rgba(209, 255, 0, 0.08), transparent 80%)`
+    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.15), transparent 80%)`
   )
 
   const rotateX = useTransform(spotlightY, [0, 1000], [3, -3])
@@ -244,7 +244,7 @@ export function Projects() {
     >
       {/* Dynamic Global Spotlight Layer */}
       <motion.div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="absolute inset-0 z-[5] pointer-events-none"
         style={{ background: spotlightBg }}
       />
       <motion.div 
