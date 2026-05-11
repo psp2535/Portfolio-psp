@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { motion, useInView, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion'
 import {
   FaGraduationCap, FaTrophy, FaBolt, FaCode, FaServer, FaReact, FaNodeJs
@@ -72,19 +72,26 @@ export function About() {
     ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.15), transparent 80%)`
   )
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
-  }
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!ref.current) return
+      const rect = ref.current.getBoundingClientRect()
+      // Only update if mouse is within a reasonable range of the section
+      if (e.clientY >= rect.top - 500 && e.clientY <= rect.bottom + 500) {
+        mouseX.set(e.clientX - rect.left)
+        mouseY.set(e.clientY - rect.top)
+      }
+    }
+
+    window.addEventListener('mousemove', handleGlobalMouseMove)
+    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
+  }, [])
 
   return (
     <section
       id="about"
       className="relative pt-48 pb-32 bg-black overflow-hidden"
       ref={ref}
-      onMouseMove={handleMouseMove}
     >
       {/* Dynamic Global Spotlight Layer */}
       <motion.div
