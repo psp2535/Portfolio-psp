@@ -7,7 +7,6 @@ export function CursorFollower() {
   const [mounted, setMounted] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
-  const [isTouchDevice, setIsTouchDevice] = useState(false)
   
   const cursorX = useMotionValue(-100)
   const cursorY = useMotionValue(-100)
@@ -20,34 +19,42 @@ export function CursorFollower() {
 
   useEffect(() => {
     setMounted(true)
-    setIsTouchDevice(window.matchMedia('(pointer: coarse)').matches)
   }, [])
 
   useEffect(() => {
     if (!mounted) return
 
     const handleMouseMove = (e: MouseEvent) => {
-      // If we detect mouse movement, it's not a restricted touch device
-      if (isTouchDevice) setIsTouchDevice(false)
       cursorX.set(e.clientX)
       cursorY.set(e.clientY)
       setIsVisible(true)
     }
 
-    const handleMouseDown = (e: MouseEvent) => {
-      // Only show the name signature ~20% of the time to keep it rare
-      if (Math.random() > 0.2) return;
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0]
+      cursorX.set(touch.clientX)
+      cursorY.set(touch.clientY)
+      setIsVisible(true)
+    }
 
+    const handleMouseDown = (e: MouseEvent) => {
+      if (Math.random() > 0.2) return;
       const newClick = {
         id: Date.now(),
         x: e.clientX,
         y: e.clientY
       }
       setClicks(prev => [...prev.slice(-3), newClick])
-      
       setTimeout(() => {
         setClicks(prev => prev.filter(c => c.id !== newClick.id))
       }, 1500)
+    }
+
+    const handleTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0]
+      cursorX.set(touch.clientX)
+      cursorY.set(touch.clientY)
+      setIsVisible(true)
     }
 
     const handleMouseEnter = () => setIsVisible(true)
@@ -69,6 +76,8 @@ export function CursorFollower() {
     window.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseenter', handleMouseEnter)
     window.addEventListener('mouseleave', handleMouseLeave)
+    window.addEventListener('touchmove', handleTouchMove)
+    window.addEventListener('touchstart', handleTouchStart)
     document.addEventListener('mouseover', handleElementHover)
 
     return () => {
@@ -76,12 +85,13 @@ export function CursorFollower() {
       window.removeEventListener('mousedown', handleMouseDown)
       window.removeEventListener('mouseenter', handleMouseEnter)
       window.removeEventListener('mouseleave', handleMouseLeave)
+      window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchstart', handleTouchStart)
       document.removeEventListener('mouseover', handleElementHover)
     }
-  }, [mounted, isTouchDevice, cursorX, cursorY])
+  }, [mounted, cursorX, cursorY])
 
-  // Don't render on server or touch devices
-  if (!mounted || isTouchDevice) {
+  if (!mounted) {
     return null
   }
 
@@ -117,7 +127,7 @@ export function CursorFollower() {
       </AnimatePresence>
       {/* The Dot (Instant) */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[10000] hidden md:block"
+        className="pointer-events-none fixed top-0 left-0 z-[10000]"
         style={{
           x: cursorX,
           y: cursorY,
@@ -135,7 +145,7 @@ export function CursorFollower() {
 
       {/* The Circle (Trailing) */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[9999] hidden md:block"
+        className="pointer-events-none fixed top-0 left-0 z-[9999]"
         style={{
           x: cursorXSpring,
           y: cursorYSpring,
@@ -180,7 +190,7 @@ export function CursorFollower() {
       
       {/* Trailing glow effect */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[9998] hidden md:block"
+        className="pointer-events-none fixed top-0 left-0 z-[9998]"
         style={{
           x: cursorXSpring,
           y: cursorYSpring,

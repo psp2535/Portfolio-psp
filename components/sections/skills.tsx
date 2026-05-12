@@ -219,6 +219,7 @@ function OrbitGroup({ skills, radius, speed, setHoveredSkill, hoveredSkill, reve
             <motion.div
               onMouseEnter={() => setHoveredSkill(skill.name)}
               onMouseLeave={() => setHoveredSkill(null)}
+              onClick={() => setHoveredSkill(hoveredSkill === skill.name ? null : skill.name)}
               whileHover={{ scale: 1.3, zIndex: 100 }}
               className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black border border-white/10 flex items-center justify-center cursor-pointer group hover:border-primary transition-all shadow-[0_0_20px_rgba(0,0,0,1)] relative"
               style={{
@@ -237,7 +238,7 @@ function OrbitGroup({ skills, radius, speed, setHoveredSkill, hoveredSkill, reve
                     initial={{ opacity: 0, x: 20, scale: 0.5 }}
                     animate={{ opacity: 1, x: 50, scale: 1 }}
                     exit={{ opacity: 0, x: 20, scale: 0.5 }}
-                    className="absolute left-full ml-4 z-[110] pointer-events-none"
+                    className="absolute bottom-full mb-4 md:bottom-auto md:left-full md:ml-4 z-[110] pointer-events-none left-1/2 -translate-x-1/2 md:translate-x-0"
                   >
                     <div className="bg-black/90 backdrop-blur-md border border-primary/50 px-4 py-1.5 rounded-sm whitespace-nowrap shadow-[0_0_20px_rgba(209,255,0,0.3)]">
                       <span className="font-mono text-sm text-primary uppercase tracking-widest font-bold">
