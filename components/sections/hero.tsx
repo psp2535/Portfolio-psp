@@ -201,6 +201,11 @@ export function Hero() {
                     color: "#D1FF00",
                     textShadow: "0 0 50px rgba(209,255,0,0.8)"
                   }}
+                  whileTap={{
+                    scaleY: 1.2,
+                    color: "#D1FF00",
+                    textShadow: "0 0 50px rgba(209,255,0,0.8)"
+                  }}
                   className="inline-block transition-all duration-300 origin-bottom"
                 >
                   {char}
@@ -214,6 +219,11 @@ export function Hero() {
                 <motion.span
                   key={i}
                   whileHover={{
+                    scale: 1.1,
+                    color: "#D1FF00",
+                    textShadow: "0 0 40px rgba(209,255,0,1)"
+                  }}
+                  whileTap={{
                     scale: 1.1,
                     color: "#D1FF00",
                     textShadow: "0 0 40px rgba(209,255,0,1)"
@@ -265,6 +275,11 @@ export function Hero() {
                   }}
                   exit={{ rotateX: 90, opacity: 0, y: -20 }}
                   whileHover={{
+                    scale: 1.2,
+                    color: "#ffffff",
+                    textShadow: "0 0 30px rgba(209,255,0,1)"
+                  }}
+                  whileTap={{
                     scale: 1.2,
                     color: "#ffffff",
                     textShadow: "0 0 30px rgba(209,255,0,1)"

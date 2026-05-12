@@ -149,7 +149,8 @@ export function About() {
                 {skills.map((skill, i) => (
                   <motion.div
                     key={i}
-                    whileHover={{ scale: 1.05, y: -5 }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
                     className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 rounded-sm group hover:border-primary/50 transition-all cursor-default"
                   >
                     <skill.icon className="w-4 h-4 transition-colors" style={{ color: skill.color }} />
@@ -168,6 +169,7 @@ export function About() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.2 }}
               whileHover={{ y: -10 }}
+              whileTap={{ scale: 0.98 }}
               className="p-8 bg-white/5 border border-white/10 rounded-sm relative group overflow-hidden cursor-default"
             >
               <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all">
@@ -195,6 +197,7 @@ export function About() {
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.6, delay: 0.4 + i * 0.1 }}
                     whileHover={{ x: 10, backgroundColor: 'rgba(255,255,255,0.08)' }}
+                    whileTap={{ scale: 0.98, backgroundColor: 'rgba(255,255,255,0.1)' }}
                     className="flex items-center gap-6 p-5 bg-white/5 border border-white/10 rounded-sm group transition-all cursor-default"
                   >
                     <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-sm bg-black border border-white/10 group-hover:border-primary/50 transition-colors p-2">

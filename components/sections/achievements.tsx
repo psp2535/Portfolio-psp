@@ -53,6 +53,7 @@ function AchievementCard({ achievement, index, isInView }: any) {
       initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.8, delay: index * 0.1 }}
+      whileTap={{ scale: 0.98 }}
       className="group relative bg-[#070707] border border-white/5 p-8 transition-all duration-500 hover:bg-[#0a0a0a] overflow-hidden"
     >
       {/* Dynamic Glow Background */}

@@ -97,6 +97,7 @@ function ProjectCard({ project, index, isInView }: {
       transition={{ duration: 0.8, delay: index * 0.1 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      whileTap={{ scale: 0.98 }}
       style={{ rotateX, rotateY, perspective: 1000 }}
       className="group relative bg-[#070707] border border-white/5 p-8 md:p-10 transition-all duration-700 hover:bg-[#0a0a0a] overflow-hidden cursor-default"
     >
