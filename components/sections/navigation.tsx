@@ -100,7 +100,7 @@ export function Navigation() {
             <motion.a
               href="/resume.pdf"
               download="Pathange_Sai_Pranav_Resume.pdf"
-              className="hidden md:flex items-center gap-2 px-5 py-2 rounded-none border border-primary text-primary text-sm font-mono uppercase tracking-wider hover:bg-primary/10 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2 rounded-none border border-primary text-primary text-[10px] md:text-sm font-mono uppercase tracking-wider hover:bg-primary/10 transition-colors mr-2 md:mr-0"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
