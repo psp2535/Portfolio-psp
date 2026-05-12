@@ -160,7 +160,7 @@ export function Skills() {
               {/* Orbits */}
               <OrbitGroup
                 skills={allSkills.filter(s => s.orbit === 1)}
-                radius={isMobile ? 80 : 140}
+                radius={isMobile ? 60 : 140}
                 speed={40}
                 setHoveredSkill={setHoveredSkill}
                 hoveredSkill={hoveredSkill}
@@ -168,7 +168,7 @@ export function Skills() {
               />
               <OrbitGroup
                 skills={allSkills.filter(s => s.orbit === 2)}
-                radius={isMobile ? 130 : 240}
+                radius={isMobile ? 100 : 240}
                 speed={60}
                 setHoveredSkill={setHoveredSkill}
                 hoveredSkill={hoveredSkill}
@@ -176,7 +176,7 @@ export function Skills() {
               />
               <OrbitGroup
                 skills={allSkills.filter(s => s.orbit === 3)}
-                radius={isMobile ? 180 : 360}
+                radius={isMobile ? 145 : 360}
                 speed={90}
                 setHoveredSkill={setHoveredSkill}
                 hoveredSkill={hoveredSkill}
@@ -222,7 +222,7 @@ function OrbitGroup({ skills, radius, speed, setHoveredSkill, hoveredSkill, reve
               onMouseLeave={() => setHoveredSkill(null)}
               onClick={() => setHoveredSkill(hoveredSkill === skill.name ? null : skill.name)}
               whileHover={{ scale: 1.3, zIndex: 100 }}
-              className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black border border-white/10 flex items-center justify-center cursor-pointer group hover:border-primary transition-all shadow-[0_0_20px_rgba(0,0,0,1)] relative"
+              className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-black border border-white/10 flex items-center justify-center cursor-pointer group hover:border-primary transition-all shadow-[0_0_20px_rgba(0,0,0,1)] relative"
               style={{
                 boxShadow: hoveredSkill === skill.name ? `0 0 30px ${skill.color}55` : 'none',
                 zIndex: hoveredSkill === skill.name ? 200 : 1
