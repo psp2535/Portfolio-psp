@@ -196,6 +196,7 @@ function OrbitGroup({ skills, radius, speed, setHoveredSkill, hoveredSkill, reve
       animate={{ rotate: reverse ? -360 : 360 }}
       transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
       className="absolute inset-0 flex items-center justify-center pointer-events-none"
+      style={{ zIndex: skills.some((s: any) => s.name === hoveredSkill) ? 100 : 1 }}
     >
       {/* Visual Orbit Ring */}
       <div
@@ -223,7 +224,8 @@ function OrbitGroup({ skills, radius, speed, setHoveredSkill, hoveredSkill, reve
               whileHover={{ scale: 1.3, zIndex: 100 }}
               className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black border border-white/10 flex items-center justify-center cursor-pointer group hover:border-primary transition-all shadow-[0_0_20px_rgba(0,0,0,1)] relative"
               style={{
-                boxShadow: hoveredSkill === skill.name ? `0 0 30px ${skill.color}55` : 'none'
+                boxShadow: hoveredSkill === skill.name ? `0 0 30px ${skill.color}55` : 'none',
+                zIndex: hoveredSkill === skill.name ? 200 : 1
               }}
             >
               <skill.icon
