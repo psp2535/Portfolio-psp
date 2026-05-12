@@ -74,10 +74,20 @@ export function Skills() {
   const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
   const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
 
-  const spotlightBg = useTransform(
-    [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.15), transparent 80%)`
+    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
   )
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!ref.current) return
+      const rect = ref.current.getBoundingClientRect()
+      mouseX.set(e.clientX - rect.left)
+      mouseY.set(e.clientY - rect.top)
+    }
+
+    window.addEventListener('mousemove', handleGlobalMouseMove)
+    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
+  }, [])
 
   const rotateX = useTransform(spotlightY, [0, 1000], [5, -5])
   const rotateY = useTransform(spotlightX, [0, 1000], [-5, 5])
@@ -87,13 +97,12 @@ export function Skills() {
       id="skills"
       className="relative py-48 bg-black overflow-hidden min-h-screen flex items-center justify-center"
       ref={ref}
-      onMouseMove={handleMouseMove}
     >
       {mounted && (
         <>
           {/* Dynamic Global Spotlight Layer */}
           <motion.div
-            className="absolute inset-0 z-[5] pointer-events-none"
+            className="absolute inset-0 z-[50] pointer-events-none opacity-100"
             style={{ background: spotlightBg }}
           />
 

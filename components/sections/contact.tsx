@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, useMotionValue, useSpring, useTransform, useScroll, AnimatePresence } from 'framer-motion'
 import { Mail, Github, Linkedin, Instagram, Send, Globe, CheckCircle2, Loader2 } from 'lucide-react'
 
@@ -46,10 +46,20 @@ export function Contact() {
   const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
   const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
   
-  const spotlightBg = useTransform(
-    [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 600px at ${x}px ${y}px, rgba(209, 255, 0, 0.15), transparent 80%)`
+    ([x, y]) => `radial-gradient(circle 600px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
   )
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!ref.current) return
+      const rect = ref.current.getBoundingClientRect()
+      mouseX.set(e.clientX - rect.left)
+      mouseY.set(e.clientY - rect.top)
+    }
+
+    window.addEventListener('mousemove', handleGlobalMouseMove)
+    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
+  }, [])
 
   const rotateX = useTransform(spotlightY, [0, 1000], [3, -3])
   const rotateY = useTransform(spotlightX, [0, 1000], [-3, 3])
@@ -78,7 +88,7 @@ export function Contact() {
     >
       {/* Dynamic Global Spotlight Layer */}
       <motion.div
-        className="absolute inset-0 z-[5] pointer-events-none"
+        className="absolute inset-0 z-[50] pointer-events-none opacity-100"
         style={{ background: spotlightBg }}
       />
 
