@@ -1,4 +1,4 @@
-# 🦾 Tech-Noir Portfolio v2.0
+# Portfolio v2.0
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
@@ -7,7 +7,7 @@
 
 A high-end, industrial "Tech-Noir" digital experience. This portfolio is engineered with a focus on immersive kinetic interactions, global lighting systems, and technical HUD-style aesthetics.
 
-## 🚀 Key Terminal Features
+## Key Terminal Features
 
 - **Cinematic 3D Interaction:** Every section features a mouse-reactive 3D tilt engine with weighted physics.
 - **Atmospheric Lighting:** A unified, cursor-tracking radial spotlight system that interacts with technical UI elements.
@@ -16,7 +16,7 @@ A high-end, industrial "Tech-Noir" digital experience. This portfolio is enginee
 - **Industrial HUD Footer:** Real-time clock, system diagnostic readouts, and AES-256 encryption aesthetics.
 - **Live Communication Terminal:** Functional contact form powered by **Formspree** with custom transmission animations.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Framework:** Next.js 15 (App Router)
 - **Styling:** Tailwind CSS + Custom Vanilla CSS Utilities
@@ -25,7 +25,7 @@ A high-end, industrial "Tech-Noir" digital experience. This portfolio is enginee
 - **Icons:** Lucide React + React Icons
 - **Typefaces:** Anton (HUD Headers), JetBrains Mono (Technical Data), Inter (Content)
 
-## 📦 Local Installation
+## Local Installation
 
 1. **Clone the repository:**
    ```bash
@@ -45,7 +45,7 @@ A high-end, industrial "Tech-Noir" digital experience. This portfolio is enginee
    npm run dev
    ```
 
-## 👤 Credits
+## Credits
 
 Built with precision by **Pathange Sai Pranav (PSP)**.
 
