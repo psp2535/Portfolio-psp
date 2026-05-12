@@ -12,6 +12,7 @@ import {
   SiVercel, SiPostman, SiPrisma, SiCplusplus
 } from 'react-icons/si'
 import { Star } from 'lucide-react'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 const allSkills = [
   // Core Orbit
@@ -47,6 +48,7 @@ export function Skills() {
 
   const [mounted, setMounted] = useState(false)
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     setMounted(true)
@@ -73,7 +75,8 @@ export function Skills() {
 
   const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
   const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
-
+  const spotlightBg = useTransform(
+    [spotlightX, spotlightY],
     ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
   )
 
@@ -157,7 +160,7 @@ export function Skills() {
               {/* Orbits */}
               <OrbitGroup
                 skills={allSkills.filter(s => s.orbit === 1)}
-                radius={140}
+                radius={isMobile ? 80 : 140}
                 speed={40}
                 setHoveredSkill={setHoveredSkill}
                 hoveredSkill={hoveredSkill}
@@ -165,7 +168,7 @@ export function Skills() {
               />
               <OrbitGroup
                 skills={allSkills.filter(s => s.orbit === 2)}
-                radius={240}
+                radius={isMobile ? 130 : 240}
                 speed={60}
                 setHoveredSkill={setHoveredSkill}
                 hoveredSkill={hoveredSkill}
@@ -173,7 +176,7 @@ export function Skills() {
               />
               <OrbitGroup
                 skills={allSkills.filter(s => s.orbit === 3)}
-                radius={360}
+                radius={isMobile ? 180 : 360}
                 speed={90}
                 setHoveredSkill={setHoveredSkill}
                 hoveredSkill={hoveredSkill}

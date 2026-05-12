@@ -69,8 +69,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-[#000000]">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} ${anton.variable} font-sans antialiased`}>
+    <html lang="en" className="bg-[#000000] overflow-x-hidden">
+      <body className={`${inter.variable} ${jetbrainsMono.variable} ${anton.variable} font-sans antialiased overflow-x-hidden`}>
         <div className="noise-overlay" aria-hidden="true" />
         <div className="grid-overlay" aria-hidden="true" />
         {children}

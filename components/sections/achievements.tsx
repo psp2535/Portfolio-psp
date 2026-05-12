@@ -139,7 +139,8 @@ export function Achievements() {
   const mouseY = useMotionValue(0)
   const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
   const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
-
+  const spotlightBg = useTransform(
+    [spotlightX, spotlightY],
     ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
   )
 

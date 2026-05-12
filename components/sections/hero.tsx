@@ -191,7 +191,7 @@ export function Hero() {
           }}
           className="relative z-20 mb-8 mt-4 flex flex-col items-start cursor-default select-none"
         >
-          <h1 className="font-[family-name:var(--font-anton)] text-[14vw] md:text-[11vw] leading-[0.9] tracking-tighter uppercase flex items-baseline flex-wrap gap-x-6 md:gap-x-10">
+          <h1 className="font-[family-name:var(--font-anton)] text-[15vw] md:text-[11vw] leading-[0.9] tracking-tighter uppercase flex flex-col md:flex-row items-start md:items-baseline gap-2 md:gap-x-10">
             <span className="relative inline-block group text-white">
               {"PATHANGE".split("").map((char, i) => (
                 <motion.span
@@ -248,7 +248,7 @@ export function Hero() {
             >
               I am a
             </motion.span>
-            <div className="relative h-[2.5em] overflow-hidden min-w-[450px] perspective-[1000px] flex items-center">
+            <div className="relative h-[2.5em] overflow-hidden min-w-[280px] md:min-w-[450px] perspective-[1000px] flex items-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={roles[roleIndex]}
