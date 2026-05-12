@@ -98,8 +98,8 @@ export function Navigation() {
 
             {/* CTA button */}
             <motion.a
-              href="/resume.pdf"
-              download="Pathange_Sai_Pranav_Resume.pdf"
+              href="/2023IMT056-PSP.pdf"
+              download="2023IMT056-PSP.pdf"
               className="flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2 rounded-none border border-primary text-primary text-[10px] md:text-sm font-mono uppercase tracking-wider hover:bg-primary/10 transition-colors mr-2 md:mr-0"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -164,8 +164,8 @@ export function Navigation() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: navItems.length * 0.1 }}
-                href="/resume.pdf"
-                download="Pathange_Sai_Pranav_Resume.pdf"
+                href="/2023IMT056-PSP.pdf"
+                download="2023IMT056-PSP.pdf"
                 className="mt-8 px-8 py-4 border border-primary text-primary font-mono uppercase tracking-wider hover:bg-primary/10 transition-colors"
               >
                 Resume ↗
