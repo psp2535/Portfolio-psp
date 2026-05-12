@@ -131,7 +131,7 @@ export function Skills() {
 
               <div className="relative z-10">
                 <span className="font-mono text-primary text-[10px] tracking-[0.4em] mb-4 block uppercase">02 - SKILLS</span>
-                <h2 className="font-[family-name:var(--font-anton)] text-7xl md:text-9xl flex flex-row items-baseline gap-6 md:gap-10 leading-none group">
+                <h2 className="font-[family-name:var(--font-anton)] text-5xl md:text-9xl flex flex-row items-baseline gap-6 md:gap-10 leading-none group">
                   <span className="text-white uppercase group-hover:text-primary transition-colors duration-500">SKILLS</span>
                   <span className="text-transparent [-webkit-text-stroke:1.5px_rgba(209,255,0,0.5)] uppercase relative inline-block">
                     ORBIT_
@@ -152,9 +152,9 @@ export function Skills() {
                   boxShadow: ["0 0 20px rgba(209,255,0,0.2)", "0 0 50px rgba(209,255,0,0.4)", "0 0 20px rgba(209,255,0,0.2)"]
                 }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="z-50 w-24 h-24 rounded-full bg-black border-2 border-primary flex items-center justify-center group"
+                className="z-50 w-16 h-16 md:w-24 md:h-24 rounded-full bg-black border-2 border-primary flex items-center justify-center group"
               >
-                <Star className="text-primary w-10 h-10 group-hover:scale-125 transition-transform" />
+                <Star className="text-primary w-6 h-6 md:w-10 md:h-10 group-hover:scale-125 transition-transform" />
               </motion.div>
 
               {/* Orbits */}
