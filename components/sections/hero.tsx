@@ -113,7 +113,7 @@ export function Hero() {
           style={{ rotateX: tiltX, rotateY: tiltY, transformPerspective: 1000 }}
           className="relative mb-8 cursor-default select-none"
         >
-          <h1 className="flex flex-col items-start gap-1 font-[family-name:var(--font-anton)] text-[16vw] uppercase leading-[0.88] tracking-tighter md:flex-row md:flex-wrap md:items-baseline md:gap-x-8 md:text-[10.5vw] xl:text-[9.5rem]">
+          <h1 className="flex flex-col items-start gap-1 font-[family-name:var(--font-anton)] text-[16vw] uppercase leading-[0.88] tracking-tighter md:flex-row md:flex-nowrap md:items-baseline md:gap-x-[0.2em] md:whitespace-nowrap md:text-[min(10.5vw,10rem)]">
             <span className="sr-only">{profile.name}</span>
             <span aria-hidden="true" className="relative inline-block text-white">
               {profile.firstName.split('').map((char, i) => (
