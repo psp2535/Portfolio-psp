@@ -1,283 +1,253 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
-import { motion, useInView, useMotionValue, useSpring, useTransform, useScroll, AnimatePresence } from 'framer-motion'
-import { Mail, Github, Linkedin, Instagram, Send, Globe, CheckCircle2, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { toast } from 'sonner'
+import { ArrowUpRight, Check, CheckCircle2, Copy, Github, Linkedin, Loader2, Send, Twitter } from 'lucide-react'
+import { SiCodechef, SiLeetcode } from 'react-icons/si'
+import { SectionHeading } from '@/components/ui/section-heading'
+import { profile, RESUME_PATH, socials } from '@/lib/data'
+
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mykolvog'
+
+type Status = 'idle' | 'sending' | 'success' | 'error'
+
+const links = [
+  { name: 'GitHub', icon: Github, href: socials.github, handle: 'psp2535' },
+  { name: 'LinkedIn', icon: Linkedin, href: socials.linkedin, handle: 'pathangesaipranav' },
+  { name: 'LeetCode', icon: SiLeetcode, href: socials.leetcode, handle: 'Suraj2304' },
+  { name: 'CodeChef', icon: SiCodechef, href: socials.codechef, handle: 'saipranav_974' },
+  { name: 'X / Twitter', icon: Twitter, href: socials.twitter, handle: 'psp25305' },
+]
+
+const inputClass =
+  'w-full border-b border-white/10 bg-white/[0.02] p-5 font-mono text-sm text-white placeholder:text-white/20 transition-all focus:border-primary/60 focus:bg-white/[0.04] focus:outline-none'
 
 export function Contact() {
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    email: '', 
-    message: '' 
-  })
-  const ref = useRef<HTMLElement>(null)
-  
+  const [status, setStatus] = useState<Status>('idle')
+  const [copied, setCopied] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', message: '', _gotcha: '' })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (form._gotcha) return // bot
     setStatus('sending')
-    
     try {
-      // Live Connection established with your Formspree ID: mykolvog
-      const response = await fetch("https://formspree.io/f/mykolvog", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ name: form.name, email: form.email, message: form.message }),
       })
-
-      if (response.ok) {
-        setStatus('success')
-        setFormData({ name: '', email: '', message: '' })
-        setTimeout(() => setStatus('idle'), 5000)
-      } else {
-        setStatus('error')
-        setTimeout(() => setStatus('idle'), 3000)
-      }
-    } catch (error) {
+      if (!res.ok) throw new Error(String(res.status))
+      setStatus('success')
+      setForm({ name: '', email: '', message: '', _gotcha: '' })
+      toast.success('Message sent', { description: "Thanks! I'll get back to you soon." })
+      setTimeout(() => setStatus('idle'), 5000)
+    } catch {
       setStatus('error')
-      setTimeout(() => setStatus('idle'), 3000)
+      toast.error('Could not send message', { description: `Please email me directly at ${profile.email}` })
+      setTimeout(() => setStatus('idle'), 4000)
     }
   }
 
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
-  const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
-    const spotlightBg = useTransform(
-    [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 600px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
-  )
-
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!ref.current) return
-      const rect = ref.current.getBoundingClientRect()
-      mouseX.set(e.clientX - rect.left)
-      mouseY.set(e.clientY - rect.top)
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email)
+      setCopied(true)
+      toast.success('Email copied to clipboard')
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.location.href = socials.email
     }
-
-    window.addEventListener('mousemove', handleGlobalMouseMove)
-    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
-  }, [])
-
-  const rotateX = useTransform(spotlightY, [0, 1000], [3, -3])
-  const rotateY = useTransform(spotlightX, [0, 1000], [-3, 3])
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  })
-
-  const yParallax = useTransform(scrollYProgress, [0, 1], [40, -40])
-  const ySpring = useSpring(yParallax, { stiffness: 100, damping: 30 })
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
   }
 
   return (
-    <section 
-      id="contact" 
-      className="relative py-48 bg-black overflow-hidden border-t border-white/5" 
-      ref={ref}
-      onMouseMove={handleMouseMove}
-    >
-      {/* Dynamic Global Spotlight Layer */}
-      <motion.div
-        className="absolute inset-0 z-[50] pointer-events-none opacity-100"
-        style={{ background: spotlightBg }}
-      />
+    <section id="contact" className="relative overflow-hidden border-t border-white/5 bg-black py-28 md:py-40">
+      <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-1/2 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-primary/[0.06] blur-[140px]" />
 
-      {/* Background Noise/Grain Overlay - Bulletproof Data-URI */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')]" />
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-6">
+        <SectionHeading
+          index="06"
+          eyebrow="Contact"
+          solid="Let's"
+          outline="Build"
+          description="Hiring for an SDE or AI role, putting together a hackathon team, or just want to talk routing algorithms? My inbox is open."
+        />
 
-      <motion.div 
-        style={{ rotateX, rotateY, y: ySpring, perspective: 1000 }}
-        className="relative z-10 max-w-7xl mx-auto px-6"
-      >
-        {/* Section Heading - Matches Project Style */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="relative mb-32 text-center"
-        >
-          <span className="font-mono text-primary text-[10px] tracking-[0.4em] mb-4 block uppercase">05 - CONTACT</span>
-          <div className="relative z-10">
-            <h2 className="font-[family-name:var(--font-anton)] text-5xl md:text-8xl flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 leading-none group">
-              <span className="text-white uppercase group-hover:text-primary transition-colors duration-500">GET IN TOUCH /</span>
-              <span className="text-transparent [-webkit-text-stroke:1.5px_rgba(209,255,0,0.5)] uppercase relative inline-block">
-                LET'S WORK_
-                <motion.span 
-                  className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-                />
-              </span>
-            </h2>
-          </div>
-          <p className="text-muted-foreground mt-8 text-sm md:text-base max-w-xl mx-auto font-mono uppercase tracking-widest opacity-60">
-            Have a project in mind or want to collaborate? I'd love to hear from you.
-          </p>
-        </motion.div>
-
-        <div className="grid lg:grid-cols-12 gap-16 lg:gap-24">
-          {/* Left Column - Contact Form */}
-          <motion.div 
+        <div className="grid gap-16 lg:grid-cols-12 lg:gap-20">
+          {/* Form */}
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.8 }}
             className="lg:col-span-7"
           >
-            <form onSubmit={handleSubmit} className="space-y-12">
-              <div className="space-y-4">
-                <label className="block font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase">YOUR NAME</label>
-                <input 
-                  required
-                  type="text" 
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="What do people call you?"
-                  className="w-full bg-white/[0.02] border-b border-white/10 p-6 font-mono text-sm focus:outline-none focus:border-primary/50 focus:bg-white/[0.04] transition-all placeholder:text-white/10 text-white"
-                />
+            <form onSubmit={handleSubmit} className="space-y-10" noValidate={false}>
+              <div className="grid gap-10 sm:grid-cols-2">
+                <label className="block space-y-3">
+                  <span className="block font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Your name</span>
+                  <input
+                    required
+                    name="name"
+                    autoComplete="name"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="What do people call you?"
+                    className={inputClass}
+                  />
+                </label>
+                <label className="block space-y-3">
+                  <span className="block font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Email</span>
+                  <input
+                    required
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="you@company.com"
+                    className={inputClass}
+                  />
+                </label>
               </div>
-
-              <div className="space-y-4">
-                <label className="block font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase">EMAIL</label>
-                <input 
+              <label className="block space-y-3">
+                <span className="block font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Message</span>
+                <textarea
                   required
-                  type="email" 
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="your@email.com"
-                  className="w-full bg-white/[0.02] border-b border-white/10 p-6 font-mono text-sm focus:outline-none focus:border-primary/50 focus:bg-white/[0.04] transition-all placeholder:text-white/10 text-white"
+                  rows={5}
+                  name="message"
+                  value={form.message}
+                  onChange={(e) => setForm({ ...form, message: e.target.value })}
+                  placeholder="Tell me about the role, the project, or just say hello…"
+                  className={`${inputClass} resize-none`}
                 />
-              </div>
-
-              <div className="space-y-4">
-                <label className="block font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase">MESSAGE</label>
-                <textarea 
-                  required
-                  rows={4}
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Tell me about your project, idea, or just say hello..."
-                  className="w-full bg-white/[0.02] border-b border-white/10 p-6 font-mono text-sm focus:outline-none focus:border-primary/50 focus:bg-white/[0.04] transition-all placeholder:text-white/10 text-white resize-none"
-                />
-              </div>
+              </label>
+              {/* Honeypot: hidden from humans, bots fill it in */}
+              <input
+                type="text"
+                name="_gotcha"
+                tabIndex={-1}
+                autoComplete="off"
+                value={form._gotcha}
+                onChange={(e) => setForm({ ...form, _gotcha: e.target.value })}
+                className="hidden"
+                aria-hidden="true"
+              />
 
               <motion.button
-                disabled={status !== 'idle'}
+                type="submit"
+                disabled={status === 'sending'}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`group relative px-10 py-5 font-[family-name:var(--font-anton)] text-xl uppercase flex items-center gap-4 overflow-hidden transition-colors ${
-                  status === 'success' ? 'bg-green-500 text-white' : 'bg-primary text-black'
+                className={`group relative flex items-center gap-4 overflow-hidden px-10 py-5 font-[family-name:var(--font-anton)] text-xl uppercase transition-colors disabled:opacity-70 ${
+                  status === 'success'
+                    ? 'bg-green-500 text-white'
+                    : status === 'error'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-primary text-black'
                 }`}
               >
                 <span className="relative z-10">
                   {status === 'idle' && 'Send message'}
-                  {status === 'sending' && 'Transmitting...'}
-                  {status === 'success' && 'Message Received'}
+                  {status === 'sending' && 'Transmitting…'}
+                  {status === 'success' && 'Message received'}
+                  {status === 'error' && 'Try again'}
                 </span>
-                
-                {status === 'idle' && <Send className="w-5 h-5 relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
-                {status === 'sending' && <Loader2 className="w-5 h-5 relative z-10 animate-spin" />}
-                {status === 'success' && <CheckCircle2 className="w-5 h-5 relative z-10" />}
-                
-                <motion.div 
-                  className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
-                />
+                {status === 'idle' && <Send className="relative z-10 h-5 w-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />}
+                {status === 'sending' && <Loader2 className="relative z-10 h-5 w-5 animate-spin" />}
+                {status === 'success' && <CheckCircle2 className="relative z-10 h-5 w-5" />}
+                <span className="absolute inset-0 translate-y-full bg-white/20 transition-transform duration-300 group-hover:translate-y-0" />
               </motion.button>
-              
-              {/* Status Message HUD */}
+
               <AnimatePresence>
                 {status === 'success' && (
-                  <motion.div 
+                  <motion.p
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="p-4 border border-green-500/20 bg-green-500/5 font-mono text-[10px] tracking-widest text-green-500 uppercase flex items-center gap-3"
+                    className="flex items-center gap-3 border border-green-500/20 bg-green-500/5 p-4 font-mono text-[10px] uppercase tracking-widest text-green-500"
+                    role="status"
                   >
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                    Secure Transmission Complete. I'll get back to you soon.
-                  </motion.div>
-                )}
-                {status === 'error' && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="p-4 border border-red-500/20 bg-red-500/5 font-mono text-[10px] tracking-widest text-red-500 uppercase flex items-center gap-3"
-                  >
-                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                    Transmission Interrupted. Please check your connection and try again.
-                  </motion.div>
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
+                    Transmission complete. I&apos;ll get back to you soon.
+                  </motion.p>
                 )}
               </AnimatePresence>
             </form>
           </motion.div>
 
-          {/* Right Column - Info & Socials */}
-          <motion.div 
+          {/* Info */}
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-5 space-y-16"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.8 }}
+            className="space-y-12 lg:col-span-5"
           >
-            {/* Direct Email */}
-            <div className="space-y-6">
-              <h4 className="font-mono text-[10px] tracking-[0.4em] text-primary uppercase">DIRECT EMAIL</h4>
-              <a 
-                href="mailto:saipranav974@gmail.com" 
-                className="block font-[family-name:var(--font-anton)] text-3xl md:text-4xl text-white hover:text-primary transition-colors"
-              >
-                saipranav974@gmail.com
-              </a>
-            </div>
-
-            {/* Socials */}
-            <div className="space-y-8">
-              <h4 className="font-mono text-[10px] tracking-[0.4em] text-primary uppercase">ONLINE</h4>
-              <div className="flex flex-col gap-6">
-                {[
-                  { name: 'GitHub', icon: Github, href: 'https://github.com/psp2535' },
-                  { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/in/pathangesaipranav' },
-                  { name: 'Instagram', icon: Instagram, href: 'https://www.instagram.com/pathange_saipranav_325?igsh=NWtocHIzZnZ2bDU%3D&utm_source=qr' }
-                ].map((social) => (
-                  <a 
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-4 text-white/40 hover:text-white transition-all group border-b border-white/5 pb-4"
-                  >
-                    <social.icon className="w-5 h-5 group-hover:text-primary transition-colors" />
-                    <span className="font-mono text-sm tracking-widest uppercase">{social.name}</span>
-                  </a>
-                ))}
+            <div className="space-y-4">
+              <h3 className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">Direct email</h3>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={socials.email}
+                  className="break-all font-[family-name:var(--font-anton)] text-3xl text-white transition-colors hover:text-primary md:text-4xl"
+                >
+                  {profile.email}
+                </a>
+                <button
+                  onClick={copyEmail}
+                  aria-label="Copy email address"
+                  className="flex h-10 w-10 items-center justify-center border border-white/10 text-white/50 transition-colors hover:border-primary hover:text-primary"
+                >
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                </button>
               </div>
             </div>
 
-            {/* Availability Card */}
-            <div className="p-8 border border-white/5 bg-white/[0.02] relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
+            <div className="space-y-4">
+              <h3 className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary">Online</h3>
+              <ul>
+                {links.map((l) => (
+                  <li key={l.name}>
+                    <a
+                      href={l.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center gap-4 border-b border-white/5 py-4 text-white/50 transition-colors hover:text-white"
+                    >
+                      <l.icon className="h-5 w-5 transition-colors group-hover:text-primary" />
+                      <span className="font-mono text-sm uppercase tracking-widest">{l.name}</span>
+                      <span className="ml-auto hidden font-mono text-xs text-white/25 sm:inline">@{l.handle}</span>
+                      <ArrowUpRight className="h-4 w-4 opacity-0 transition-all group-hover:-translate-y-0.5 group-hover:opacity-100" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="group relative overflow-hidden border border-white/5 bg-white/[0.02] p-7">
+              <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-primary/5 blur-2xl transition-colors group-hover:bg-primary/10" />
               <div className="relative z-10 flex items-start gap-4">
-                <div className="w-2 h-2 rounded-full bg-primary mt-2 animate-pulse shadow-[0_0_10px_#D1FF00]" />
+                <span className="mt-2 h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_10px_#D1FF00]" />
                 <div className="space-y-2">
-                  <h5 className="font-mono text-xs font-bold text-white tracking-widest uppercase">Available for work</h5>
-                  <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-tighter">
-                    Open to full-time, contract & freelance
+                  <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-white">Available for opportunities</h4>
+                  <p className="text-sm leading-relaxed text-white/50">
+                    Open to SDE / AI internships, full-time roles and hackathon collaborations.
                   </p>
+                  <a
+                    href={RESUME_PATH}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 pt-2 font-mono text-[11px] uppercase tracking-widest text-primary hover:underline"
+                  >
+                    Download resume <ArrowUpRight className="h-3.5 w-3.5" />
+                  </a>
                 </div>
               </div>
             </div>
           </motion.div>
         </div>
-      </motion.div>
+      </div>
     </section>
   )
 }

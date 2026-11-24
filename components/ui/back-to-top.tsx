@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { useScrollTo } from '@/components/providers/smooth-scroll-provider'
+import { motion, AnimatePresence, useScroll, useSpring, useMotionValue } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
 
 export function BackToTop() {
   const [isVisible, setIsVisible] = useState(false)
   const { scrollY } = useScroll()
+  const scrollTo = useScrollTo()
   
   // Magnetic effect values
   const mouseX = useMotionValue(0)
@@ -34,7 +36,7 @@ export function BackToTop() {
   }
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    scrollTo(0)
   }
 
   return (
@@ -44,14 +46,15 @@ export function BackToTop() {
           initial={{ opacity: 0, scale: 0.5, y: 50 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.5, y: 50 }}
-          className="fixed bottom-10 right-10 z-50"
+          className="fixed bottom-5 right-5 z-50 md:bottom-10 md:right-10"
         >
           <motion.button
             onClick={scrollToTop}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{ x: springX, y: springY }}
-            className="group relative w-16 h-16 bg-black border border-white/10 flex items-center justify-center overflow-hidden hover:border-primary transition-colors"
+            aria-label="Back to top"
+            className="group relative w-12 h-12 md:w-16 md:h-16 bg-black border border-white/10 flex items-center justify-center overflow-hidden hover:border-primary transition-colors"
           >
             {/* HUD Scanline Effect */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent animate-scanline pointer-events-none" />

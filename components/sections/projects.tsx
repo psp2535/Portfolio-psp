@@ -1,324 +1,238 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
-import { motion, useInView, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion'
-import { ExternalLink, Github } from 'lucide-react'
+import { useRef } from 'react'
+import { motion } from 'framer-motion'
+import { ArrowUpRight, Github, Trophy } from 'lucide-react'
+import { SectionHeading } from '@/components/ui/section-heading'
+import { AuditVisual, RetailVisual, RoutingVisual } from '@/components/sections/project-visuals'
+import { featuredProjects, otherProjects, socials, type Project } from '@/lib/data'
 
-const projects = [
-  {
-    index: '01',
-    year: '2026',
-    category: '[ FULL-STACK PLATFORM ]',
-    title: 'ABV-IIITM REGISTRATION',
-    subtitle: 'SMART ACADEMIC MANAGEMENT SYSTEM',
-    description: 'Scalable academic workflow platform featuring secure authentication, automated approval pipelines, dynamic course allocation, and real-time validation for 500+ users.',
-    tech: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'JWT', 'REST APIs'],
-    liveUrl: 'https://abviiitm-frontend.onrender.com',
-    githubUrl: 'https://github.com/psp2535/HCI_PROJECT',
-    hoverColor: '#D1FF00' // Lime Green
-  },
-  {
-    index: '02',
-    year: '2026',
-    category: '[ HACKATHON ]',
-    title: 'SMART KIRANA',
-    subtitle: 'AI-POWERED RETAIL OPERATING SYSTEM',
-    description: 'Comprehensive AI-driven retail platform built during Hacksagon 2026, enabling smart inventory management, AI-powered business insights, automated bill scanning, and conversational retail operations for small businesses.',
-    tech: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'Gemini AI', 'Tailwind', 'JWT'],
-    liveUrl: 'https://biznova.onrender.com/',
-    githubUrl: 'https://github.com/psp2535/Smart-Kirana',
-    hoverColor: '#00f2ff' // Cyan
-  },
-  {
-    index: '03',
-    year: '2025',
-    category: '[ HACKATHON ]',
-    title: 'BIZNOVA',
-    subtitle: 'AI-POWERED BUSINESS INTELLIGENCE PLATFORM',
-    description: 'Built during the AI for All Hackathon 2026, BizNova is an AI-driven retail management platform designed to automate inventory, CRM, analytics, and business operations using intelligent automation and predictive insights.',
-    tech: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'Gemini API', 'Tailwind'],
-    liveUrl: 'https://biznova.onrender.com/login',
-    githubUrl: 'https://github.com/suri5790/Biznova',
-    hoverColor: '#bd00ff' // Purple
-  },
-  {
-    index: '04',
-    year: '2025',
-    category: '[ FULL-STACK PLATFORM ]',
-    title: 'BLOGGING PLATFORM',
-    subtitle: 'MODERN CONTENT PUBLISHING SYSTEM',
-    description: 'Full-stack blogging platform featuring secure authentication, seamless content publishing, and intuitive blog management with a scalable backend architecture and responsive user experience.',
-    tech: ['React.js', 'TypeScript', 'Hono', 'Prisma', 'Wrangler', 'Vercel'],
-    liveUrl: 'https://blogging-website-livid.vercel.app/',
-    githubUrl: 'https://github.com/suri5790/Blogging-Website',
-    hoverColor: '#ff0055' // Pink/Red
-  },
-]
+const visuals: Record<string, (p: { color: string }) => React.ReactElement> = {
+  'brand-ai-audit': AuditVisual,
+  'traffic-ai': RoutingVisual,
+  biznova: RetailVisual,
+}
 
-function ProjectCard({ project, index, isInView }: {
-  project: typeof projects[0],
-  index: number,
-  isInView: boolean
-}) {
-  const cardRef = useRef<HTMLDivElement>(null)
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
+/** Black or white text, whichever reads better on the given hex background. */
+function textOn(hex: string) {
+  const n = parseInt(hex.slice(1), 16)
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.55 ? '#000' : '#fff'
+}
 
-  const springConfig = { damping: 20, stiffness: 150 }
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [7, -7]), springConfig)
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-7, 7]), springConfig)
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return
-    const rect = cardRef.current.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-    mouseX.set(x)
-    mouseY.set(y)
-
-    // Update spotlight CSS variables
-    cardRef.current.style.setProperty('--mouse-x', `${(e.clientX - rect.left)}px`)
-    cardRef.current.style.setProperty('--mouse-y', `${(e.clientY - rect.top)}px`)
+/** Updates --mx/--my on the element so a CSS radial gradient can follow the cursor. */
+function useSpotlight<T extends HTMLElement>() {
+  const ref = useRef<T>(null)
+  const onMouseMove = (e: React.MouseEvent<T>) => {
+    const el = ref.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    el.style.setProperty('--mx', `${e.clientX - r.left}px`)
+    el.style.setProperty('--my', `${e.clientY - r.top}px`)
   }
+  return { ref, onMouseMove }
+}
 
-  const handleMouseLeave = () => {
-    mouseX.set(0)
-    mouseY.set(0)
-  }
-
-  const textTranslateX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), springConfig)
-  const textTranslateY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-10, 10]), springConfig)
+function FeaturedProject({ project, flip }: { project: Project; flip: boolean }) {
+  const { ref, onMouseMove } = useSpotlight<HTMLElement>()
+  const Visual = visuals[project.id]
 
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay: index * 0.1 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      whileTap={{ scale: 0.98 }}
-      style={{ rotateX, rotateY, perspective: 1000 }}
-      className="group relative bg-[#070707] border border-white/5 p-8 md:p-10 transition-all duration-700 hover:bg-[#0a0a0a] overflow-hidden cursor-default"
+    <motion.article
+      ref={ref}
+      onMouseMove={onMouseMove}
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative overflow-hidden border border-white/[0.07] bg-[#070707] p-6 md:p-10 lg:p-12"
     >
-      {/* Dynamic Colored Spotlight */}
       <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{
-          background: `radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${project.hoverColor}25, transparent 80%)`,
-        }}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{ background: `radial-gradient(500px circle at var(--mx, 50%) var(--my, 50%), ${project.color}18, transparent 75%)` }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute left-0 top-0 z-20 h-0 w-[2px] transition-all duration-700 group-hover:h-full"
+        style={{ backgroundColor: project.color, boxShadow: `0 0 20px ${project.color}` }}
       />
 
-      {/* Accent Hover Line with Glow */}
-      <div
-        className="absolute left-0 top-0 w-[2px] h-0 transition-all duration-700 group-hover:h-full z-20"
-        style={{
-          backgroundColor: project.hoverColor,
-          boxShadow: `0 0 20px ${project.hoverColor}`
-        }}
-      />
+      <div className={`relative z-10 grid gap-10 lg:grid-cols-2 lg:gap-14 ${flip ? 'lg:[&>*:first-child]:order-2' : ''}`}>
+        {/* Copy */}
+        <div className="flex flex-col">
+          <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">
+            <span className="font-bold" style={{ color: project.color }}>
+              {project.index}
+            </span>
+            <span>{project.period}</span>
+          </div>
 
-      {/* Background Noise/Grain Overlay - Bulletproof Data-URI */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')]" />
+          {project.badge && (
+            <span
+              className="mb-4 inline-flex w-fit items-center gap-2 border px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider"
+              style={{ color: project.color, borderColor: `${project.color}55`, backgroundColor: `${project.color}0d` }}
+            >
+              <Trophy className="h-3 w-3" /> {project.badge}
+            </span>
+          )}
 
-      {/* Header Meta Row */}
-      <div className="flex justify-between items-start mb-12 relative z-10">
-        <div className="flex items-center gap-6 font-mono text-[10px] tracking-[0.3em] text-white/40">
-          <span className="font-bold group-hover:scale-110 transition-transform" style={{ color: project.hoverColor }}>{project.index}</span>
-          <span className="group-hover:text-white/80 transition-colors">{project.year}</span>
-          <span className="text-white/20 group-hover:text-primary/40 transition-colors">{project.category}</span>
+          <h3 className="mb-2 font-[family-name:var(--font-anton)] text-4xl uppercase leading-[0.95] tracking-tight text-white md:text-6xl">
+            {project.title}
+          </h3>
+          <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.3em] text-white/50">{project.subtitle}</p>
+          {project.event && <p className="mb-6 font-mono text-[11px] tracking-wider" style={{ color: project.color }}>{project.event}</p>}
+
+          <p className="mb-6 text-base leading-relaxed text-white/75">{project.summary}</p>
+
+          <ul className="mb-8 space-y-3">
+            {project.highlights.map((h) => (
+              <li key={h} className="flex gap-3 text-sm leading-relaxed text-muted-foreground transition-colors group-hover:text-white/70">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rotate-45" style={{ backgroundColor: project.color }} />
+                {h}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mb-8 flex flex-wrap gap-2">
+            {project.tech.map((t) => (
+              <span key={t} className="border border-white/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-white/50">
+                {t}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-auto flex flex-wrap gap-3">
+            {project.live && (
+              <a
+                href={project.live}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group/btn flex items-center gap-2 px-5 py-3 font-mono text-xs font-bold uppercase tracking-wider transition-opacity hover:opacity-85"
+                style={{ backgroundColor: project.color, color: textOn(project.color) }}
+              >
+                Live demo <ArrowUpRight className="h-4 w-4 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />
+              </a>
+            )}
+            {project.github && (
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 border border-white/20 px-5 py-3 font-mono text-xs uppercase tracking-wider text-white transition-colors hover:border-white hover:bg-white hover:text-black"
+              >
+                <Github className="h-4 w-4" /> Source
+              </a>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-4 text-white/30">
-          <motion.a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, color: project.hoverColor, rotate: 5 }}
-            className="transition-all"
-          >
-            <Github className="w-5 h-5" />
-          </motion.a>
-          <motion.a
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, color: project.hoverColor, rotate: -5 }}
-            className="transition-all"
-          >
-            <ExternalLink className="w-5 h-5" />
-          </motion.a>
+
+        {/* Visual + metrics */}
+        <div className="flex flex-col justify-center gap-4">
+          <div>{Visual && <Visual color={project.color} />}</div>
+          <div className="grid grid-cols-3 gap-px border border-white/10 bg-white/10">
+            {project.metrics.map((m) => (
+              <div key={m.label} className="bg-black p-4">
+                <span className="block font-[family-name:var(--font-anton)] text-2xl md:text-4xl" style={{ color: project.color }}>
+                  {m.value}
+                </span>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-white/40 md:text-[10px]">{m.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* Title & Subtitle */}
-      <motion.div
-        style={{ x: textTranslateX, y: textTranslateY }}
-        className="mb-8 relative z-10 pointer-events-none"
-      >
-        <h3
-          className="font-[family-name:var(--font-anton)] text-5xl md:text-6xl text-white mb-2 tracking-tight transition-all duration-700"
-        >
-          <style jsx>{`
-            .group:hover h3 {
-              color: ${project.hoverColor} !important;
-              text-shadow: 0 0 30px ${project.hoverColor}44;
-            }
-          `}</style>
-          {project.title}
-        </h3>
-        <p className="font-mono text-[10px] tracking-[0.5em] text-white/40 uppercase group-hover:text-white/60 transition-colors">
-          {project.subtitle}
-        </p>
-      </motion.div>
-
-      {/* Description */}
-      <motion.p
-        style={{ x: useTransform(textTranslateX, v => v * 0.5), y: useTransform(textTranslateY, v => v * 0.5) }}
-        className="text-muted-foreground text-sm leading-relaxed mb-10 max-w-md relative z-10 group-hover:text-white/80 transition-colors pointer-events-none"
-      >
-        {project.description}
-      </motion.p>
-
-      {/* Tech Stack Tags */}
-      <motion.div
-        style={{ x: useTransform(textTranslateX, v => v * 0.3), y: useTransform(textTranslateY, v => v * 0.3) }}
-        className="flex flex-wrap gap-2 relative z-10 pointer-events-none"
-      >
-        {project.tech.map((tag) => (
-          <span
-            key={tag}
-            className="px-3 py-1 border border-white/10 rounded-sm text-[9px] font-mono tracking-widest text-white/40 uppercase transition-all duration-500 group-hover:border-primary/30 group-hover:text-white"
-          >
-            <style jsx>{`
-              .group:hover span {
-                border-color: ${project.hoverColor}33 !important;
-                background: ${project.hoverColor}05;
-                box-shadow: 0 0 10px ${project.hoverColor}11;
-              }
-            `}</style>
-            {tag}
-          </span>
-        ))}
-      </motion.div>
-    </motion.div>
+    </motion.article>
   )
 }
 
 export function Projects() {
-  const ref = useRef<HTMLElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
-  const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
-  
-  const spotlightBg = useTransform(
-    [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
-  )
-
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!ref.current) return
-      const rect = ref.current.getBoundingClientRect()
-      mouseX.set(e.clientX - rect.left)
-      mouseY.set(e.clientY - rect.top)
-    }
-
-    window.addEventListener('mousemove', handleGlobalMouseMove)
-    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
-  }, [])
-
-  const rotateX = useTransform(spotlightY, [0, 1000], [3, -3])
-  const rotateY = useTransform(spotlightX, [0, 1000], [-3, 3])
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  })
-
-  const yParallax = useTransform(scrollYProgress, [0, 1], [50, -50])
-  const ySpring = useSpring(yParallax, { stiffness: 100, damping: 30 })
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
-  }
-
   return (
-    <section 
-      id="projects" 
-      className="relative py-48 bg-black overflow-hidden" 
-      ref={ref}
-      onMouseMove={handleMouseMove}
-    >
-      {/* Dynamic Global Spotlight Layer */}
-      <motion.div
-        className="absolute inset-0 z-[50] pointer-events-none opacity-100"
-        style={{ background: spotlightBg }}
-      />
-      <motion.div 
-        style={{ rotateX, rotateY, y: ySpring, perspective: 1000 }}
-        className="relative z-10 max-w-7xl mx-auto px-6"
-      >
-        {/* Section Heading - Matches Skills Orbit Style (Cleaned) */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="relative mb-32 text-center"
-        >
-          <span className="font-mono text-primary text-[10px] tracking-[0.4em] mb-4 block uppercase">03 - PROJECTS</span>
-          <div className="relative z-10">
-            <h2 className="font-[family-name:var(--font-anton)] text-5xl md:text-8xl flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 leading-none group">
-              <span className="text-white uppercase group-hover:text-primary transition-colors duration-500">PROJECTS &</span>
-              <span className="text-transparent [-webkit-text-stroke:1.5px_rgba(209,255,0,0.5)] uppercase relative inline-block">
-                HACKATHONS_
-                <motion.span 
-                  className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-                />
-              </span>
-            </h2>
-          </div>
-        </motion.div>
+    <section id="projects" className="relative overflow-hidden bg-black py-28 md:py-40">
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-6">
+        <SectionHeading
+          index="03"
+          eyebrow="Projects"
+          solid="Selected"
+          outline="Work"
+          description="Three flagship builds, each one measured: an AI-search audit engine, a routing system that beats a published baseline, and a retail platform that won national hackathons."
+        />
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1 px-[1px] bg-white/5">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.title}
-              project={project}
-              index={index}
-              isInView={isInView}
-            />
+        <div className="space-y-6 md:space-y-8">
+          {featuredProjects.map((p, i) => (
+            <FeaturedProject key={p.id} project={p} flip={i % 2 === 1} />
           ))}
         </div>
 
-        {/* See More on GitHub - Call to Action */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="mt-20 flex justify-center"
-        >
-          <motion.a
-            href="https://github.com/psp2535"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.02, borderColor: '#D1FF00', color: '#D1FF00' }}
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-6 px-12 py-8 border border-white/10 rounded-sm group transition-all duration-300"
+        {/* More builds */}
+        <div className="mt-24">
+          <motion.h3
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-8 flex items-center gap-4 font-mono text-xs uppercase tracking-[0.4em] text-white/50"
           >
-            <Github className="w-8 h-8 opacity-70 group-hover:opacity-100 transition-opacity" />
-            <span className="font-mono text-2xl md:text-3xl tracking-widest uppercase">
-              See more on GitHub
-            </span>
-          </motion.a>
-        </motion.div>
-      </motion.div>
+            <span className="h-px w-8 bg-primary/60" /> More builds
+          </motion.h3>
+          <div className="grid gap-px border border-white/[0.07] bg-white/[0.07] sm:grid-cols-2 lg:grid-cols-4">
+            {otherProjects.map((p, i) => (
+              <motion.div
+                key={p.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.6, delay: i * 0.08 }}
+                className="group flex flex-col bg-[#070707] p-6 transition-colors hover:bg-[#0c0c0c]"
+              >
+                <div className="mb-5 flex items-center justify-between">
+                  <span className="font-mono text-[10px] tracking-[0.3em] text-primary">0{i + 4}</span>
+                  <div className="flex gap-3 text-white/40">
+                    {p.github && (
+                      <a href={p.github} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} source code`} className="transition-colors hover:text-primary">
+                        <Github className="h-4 w-4" />
+                      </a>
+                    )}
+                    {p.live && (
+                      <a href={p.live} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} live demo`} className="transition-colors hover:text-primary">
+                        <ArrowUpRight className="h-4 w-4" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+                <h4 className="mb-3 font-[family-name:var(--font-anton)] text-2xl uppercase tracking-tight text-white transition-colors group-hover:text-primary">
+                  {p.title}
+                </h4>
+                <p className="mb-5 flex-1 text-sm leading-relaxed text-white/50">{p.description}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {p.tech.map((t) => (
+                    <span key={t} className="font-mono text-[10px] uppercase tracking-wider text-white/35">
+                      #{t.replace(/\s+/g, '')}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-14 flex justify-center"
+          >
+            <a
+              href={socials.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-5 border border-white/10 px-8 py-6 transition-colors hover:border-primary hover:text-primary md:px-12"
+            >
+              <Github className="h-7 w-7 opacity-70 transition-opacity group-hover:opacity-100" />
+              <span className="font-mono text-lg uppercase tracking-widest md:text-2xl">See more on GitHub</span>
+              <ArrowUpRight className="h-6 w-6 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+            </a>
+          </motion.div>
+        </div>
+      </div>
     </section>
   )
 }

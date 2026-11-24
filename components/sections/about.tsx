@@ -1,227 +1,162 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
-import { motion, useInView, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion'
-import {
-  FaGraduationCap, FaTrophy, FaBolt, FaCode, FaServer, FaReact, FaNodeJs
-} from 'react-icons/fa'
-import {
-  SiCplusplus, SiMongodb, SiExpress, SiOpenai
-} from 'react-icons/si'
-import { Sparkles, Binary } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { BrainCircuit, GraduationCap, Layers, MapPin, Route } from 'lucide-react'
+import { SectionHeading } from '@/components/ui/section-heading'
+import { education, publication } from '@/lib/data'
 
-const achievements = [
+const pillars = [
   {
-    image: 'https://www.uxdt.nic.in/wp-content/uploads/2025/10/auto-draft-ai-impact-summit-india2025-01.jpg',
-    title: 'Winner, AI for All Hackathon',
-    desc: 'India AI Impact Summit (Top 1%)',
-    color: '#D1FF00'
+    icon: BrainCircuit,
+    title: 'AI Systems',
+    body: 'Agentic audit engines, Gemini-powered assistants, and LLM features that ship with tests rather than demos.',
+    color: '#D1FF00',
   },
   {
-    image: 'https://assets.devfolio.co/hackathons/f19cef0394ce46468a38da2b6612aa54/assets/logo/81.png',
-    title: 'Top Performer, HACKSAGON',
-    desc: 'Among 2600+ teams nationwide',
-    color: '#06b6d4'
+    icon: Route,
+    title: 'Optimization',
+    body: 'Ant Colony Optimization and time-dependent Dijkstra on real GPS data, measured against published baselines.',
+    color: '#00E5FF',
   },
   {
-    image: '/nxtwave-logo.png',
-    title: 'OpenAI x Nxtwave Finalist',
-    desc: 'Buildathon 2025 AI Innovation',
-    color: '#9333ea'
-  },
-  {
-    icon: Binary,
-    title: 'Rank 1578, CodeFest’25',
-    desc: 'National Programming Contest',
-    color: '#ff00ff'
+    icon: Layers,
+    title: 'Full-Stack',
+    body: 'MERN platforms with JWT and RBAC, geospatial MongoDB, and REST APIs built to stay fast under load.',
+    color: '#B026FF',
   },
 ]
 
-const skills = [
-  { icon: SiCplusplus, name: 'C++', color: '#00599C' },
-  { icon: SiMongodb, name: 'MongoDB', color: '#47A248' },
-  { icon: SiExpress, name: 'Express.js', color: '#ffffff' },
-  { icon: FaReact, name: 'React.js', color: '#61DAFB' },
-  { icon: FaNodeJs, name: 'Node.js', color: '#339933' },
-]
+const fadeUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-80px' },
+}
 
 export function About() {
-  const ref = useRef<HTMLElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  })
-
-  const yParallax = useTransform(scrollYProgress, [0, 1], [50, -50])
-  const ySpring = useSpring(yParallax, { stiffness: 100, damping: 30 })
-
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 })
-  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 })
-
-  const rotateX = useTransform(springY, [0, 1000], [5, -5])
-  const rotateY = useTransform(springX, [0, 1920], [-5, 5])
-
-  const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
-  const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
-  const spotlightBg = useTransform(
-    [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
-  )
-
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!ref.current) return
-      const rect = ref.current.getBoundingClientRect()
-      mouseX.set(e.clientX - rect.left)
-      mouseY.set(e.clientY - rect.top)
-    }
-
-    window.addEventListener('mousemove', handleGlobalMouseMove)
-    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
-  }, [])
-
   return (
-    <section
-      id="about"
-      className="relative pt-48 pb-32 bg-black overflow-hidden"
-      ref={ref}
-    >
-      {/* Dynamic Global Spotlight Layer - Force Visibility */}
-      <motion.div
-        className="absolute inset-0 z-[50] pointer-events-none opacity-100"
-        style={{ background: spotlightBg }}
-      />
+    <section id="about" className="relative overflow-hidden bg-black py-28 md:py-40">
+      <div className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 h-[500px] w-[500px] rounded-full bg-purple-500/5 blur-[120px]" />
 
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-6">
+        <SectionHeading index="01" eyebrow="About" solid="About" outline="Me" />
 
-      <div className="relative z-10 max-w-7xl ml-auto mr-auto lg:ml-20 px-6">
-        <motion.div
-          style={{ rotateX, rotateY, y: ySpring, perspective: 1000 }}
-          className="grid lg:grid-cols-12 gap-16"
-        >
-
-          {/* Left Column - Heading and Bio */}
-          <div className="lg:col-span-8">
+        <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+          {/* Bio */}
+          <div className="lg:col-span-7">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              {...fadeUp}
               transition={{ duration: 0.8 }}
-              className="relative"
+              className="space-y-6 text-lg font-light leading-relaxed text-muted-foreground md:text-xl"
             >
-              {/* Background Section Number */}
-              <span className="absolute -top-20 -left-10 font-[family-name:var(--font-anton)] text-[15vw] text-white/[0.03] select-none pointer-events-none">
-                01
-              </span>
-
-              <div className="relative z-10">
-                <span className="font-mono text-primary text-[10px] tracking-[0.4em] mb-4 block uppercase">01 - ABOUT</span>
-                <h2 className="font-[family-name:var(--font-anton)] text-7xl md:text-9xl mb-16 flex flex-row items-baseline gap-6 md:gap-10 leading-none group">
-                  <span className="text-white group-hover:text-primary transition-colors duration-500">ABOUT</span>
-                  <span className="text-transparent [-webkit-text-stroke:1.5px_rgba(209,255,0,0.5)] relative inline-block">
-                    ME_
-                    <motion.span
-                      className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-                    />
-                  </span>
-                </h2>
-              </div>
-
-              <div className="space-y-6 text-muted-foreground text-lg md:text-xl leading-relaxed font-light max-w-3xl">
-                <p className="hover:text-white transition-colors duration-300">
-                  <span className="text-white font-medium">Third-year Integrated B.Tech–M.Tech student at ABV-IIITM Gwalior</span>, passionate about building scalable digital products and solving complex engineering problems.
-                </p>
-                <p className="hover:text-white transition-colors duration-300">
-                  I specialize in <span className="text-primary">full-stack development with the MERN stack</span>, crafting modern web applications that combine clean user experiences with efficient and scalable backend systems.
-                </p>
-                <p className="hover:text-white transition-colors duration-300">
-                  Driven by curiosity and continuous learning, I’m currently focused on <span className="text-white">Data Structures & Algorithms</span>, <span className="text-primary">AI-powered applications</span>, and building impactful software through real-world projects and collaborations.
-                </p>
-              </div>
-
-              {/* Skills Quick Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-12 max-w-2xl">
-                {skills.map((skill, i) => (
-                  <motion.div
-                    key={i}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 rounded-sm group hover:border-primary/50 transition-all cursor-default"
-                  >
-                    <skill.icon className="w-4 h-4 transition-colors" style={{ color: skill.color }} />
-                    <span className="text-sm font-mono text-white/70 group-hover:text-white">{skill.name}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Right Column - Experience and Achievements */}
-          <div className="lg:col-span-4 space-y-8">
-            {/* Education Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              whileHover={{ y: -10 }}
-              whileTap={{ scale: 0.98 }}
-              className="p-8 bg-white/5 border border-white/10 rounded-sm relative group overflow-hidden cursor-default"
-            >
-              <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all">
-                <img
-                  src="/iiitm-logo.png"
-                  alt="ABV-IIITM"
-                  className="w-24 h-24 object-contain"
-                />
-              </div>
-              <h3 className="font-mono text-primary text-xs uppercase tracking-widest mb-4">Education</h3>
-              <p className="text-white font-medium text-xl mb-1">ABV-IIITM Gwalior</p>
-              <p className="text-muted-foreground text-sm uppercase tracking-wide">Integrated B.Tech–M.Tech (IT)</p>
-              <div className="mt-4 w-12 h-1 bg-primary/30 group-hover:w-full transition-all duration-700" />
+              <p>
+                I&apos;m a <span className="font-medium text-white">4th-year Integrated B.Tech + M.Tech (IT) student at ABV-IIITM Gwalior</span>.
+                I like problems where a clever algorithm and a well-built product have to meet.
+              </p>
+              <p>
+                Most recently I built <span className="text-primary">Brand AI Readiness Audit</span>, a 70+ check engine
+                that explains why AI assistants can&apos;t find a brand&apos;s website. It took my team to the{' '}
+                <span className="text-white">Adobe University Hackathon Grand Finale (Top 8 of 80,000+)</span>.
+              </p>
+              <p>
+                Before that I cut fleet travel time by <span className="text-white">18%</span> with ACO + time-dependent
+                routing on Beijing taxi data, and shipped <span className="text-white">BizNova</span>, a multilingual AI
+                retail platform that won or placed at three national hackathons.
+              </p>
+              <p>
+                I&apos;m also a co-author at <span className="text-white">{publication.venue}</span>, and I keep my problem-solving sharp
+                on LeetCode and CodeChef.
+              </p>
             </motion.div>
 
-            {/* Achievements Section */}
-            <div className="space-y-4">
-              <h3 className="font-mono text-muted-foreground text-xs uppercase tracking-widest mb-6 px-2">Achievements & Recognition</h3>
-              {achievements.map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.4 + i * 0.1 }}
-                    whileHover={{ x: 10, backgroundColor: 'rgba(255,255,255,0.08)' }}
-                    whileTap={{ scale: 0.98, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                    className="flex items-center gap-6 p-5 bg-white/5 border border-white/10 rounded-sm group transition-all cursor-default"
-                  >
-                    <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-sm bg-black border border-white/10 group-hover:border-primary/50 transition-colors p-2">
-                      {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-contain"
-                        />
-                      ) : Icon && (
-                        <Icon className="w-full h-full group-hover:scale-110 transition-transform" style={{ color: item.color }} />
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="text-white font-medium group-hover:text-primary transition-colors">{item.title}</h4>
-                      <p className="text-muted-foreground text-sm">{item.desc}</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+            <div className="mt-12 grid gap-4 sm:grid-cols-3">
+              {pillars.map((p, i) => (
+                <motion.div
+                  key={p.title}
+                  {...fadeUp}
+                  transition={{ duration: 0.6, delay: 0.1 + i * 0.1 }}
+                  whileHover={{ y: -6 }}
+                  className="group relative overflow-hidden border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-white/25"
+                >
+                  <div
+                    className="absolute left-0 top-0 h-0 w-[2px] transition-all duration-500 group-hover:h-full"
+                    style={{ backgroundColor: p.color, boxShadow: `0 0 16px ${p.color}` }}
+                  />
+                  <p.icon className="mb-4 h-6 w-6" style={{ color: p.color }} />
+                  <h3 className="mb-2 font-mono text-sm font-bold uppercase tracking-widest text-white">{p.title}</h3>
+                  <p className="text-sm leading-relaxed text-white/50">{p.body}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
 
-        </motion.div>
+          {/* Education */}
+          <div className="space-y-6 lg:col-span-5">
+            <motion.div
+              {...fadeUp}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="group relative overflow-hidden border border-white/10 bg-white/[0.03] p-7 md:p-8"
+            >
+              <img
+                src="/iiitm-logo.png"
+                alt=""
+                aria-hidden="true"
+                className="absolute -right-4 -top-4 h-32 w-32 object-contain opacity-15 transition-all duration-500 group-hover:scale-110 group-hover:opacity-30"
+              />
+              <div className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary">
+                <GraduationCap className="h-4 w-4" /> Education
+              </div>
+              <h3 className="mb-1 text-2xl font-medium text-white">{education.short}</h3>
+              <p className="mb-1 text-sm text-white/60">{education.school}</p>
+              <p className="text-sm uppercase tracking-wide text-muted-foreground">{education.degree}</p>
+
+              <div className="my-6 grid grid-cols-2 gap-px border border-white/10 bg-white/10">
+                <div className="bg-black p-4">
+                  <span className="block font-[family-name:var(--font-anton)] text-4xl text-primary">{education.cgpa}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">CGPA / 10</span>
+                </div>
+                <div className="bg-black p-4">
+                  <span className="block font-[family-name:var(--font-anton)] text-4xl text-white">2028</span>
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">Graduating (M.Tech)</span>
+                </div>
+              </div>
+
+              <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-white/50">
+                <span>{education.period}</span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="h-3 w-3" /> {education.location}
+                </span>
+              </div>
+
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Relevant coursework</p>
+              <div className="flex flex-wrap gap-2">
+                {education.coursework.map((c) => (
+                  <span key={c} className="border border-white/10 px-3 py-1 font-mono text-[11px] text-white/70">
+                    {c}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-6 h-1 w-12 bg-primary/40 transition-all duration-700 group-hover:w-full" />
+            </motion.div>
+
+            <motion.a
+              {...fadeUp}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              href={publication.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block border border-white/10 bg-gradient-to-br from-[#FF2E88]/[0.07] to-transparent p-7 transition-colors hover:border-[#FF2E88]/50"
+            >
+              <span className="mb-3 block font-mono text-[10px] uppercase tracking-[0.3em] text-[#FF2E88]">
+                Publication · {publication.venue}
+              </span>
+              <p className="mb-3 text-lg leading-snug text-white">&ldquo;{publication.title}&rdquo;</p>
+              <span className="font-mono text-xs uppercase tracking-widest text-white/40 transition-colors group-hover:text-white">
+                {publication.role} · Read on OpenReview ↗
+              </span>
+            </motion.a>
+          </div>
+        </div>
       </div>
     </section>
   )

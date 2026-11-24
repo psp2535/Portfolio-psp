@@ -1,262 +1,160 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
-import { motion, useInView, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion'
-import { Trophy, Star, Award, Code2, Rocket, Target } from 'lucide-react'
+import { useRef } from 'react'
+import { motion, useScroll, useSpring } from 'framer-motion'
+import { ArrowUpRight, Award } from 'lucide-react'
+import { Counter } from '@/components/ui/counter'
+import { SectionHeading } from '@/components/ui/section-heading'
+import { achievements, type Achievement } from '@/lib/data'
 
-const achievements = [
-  {
-    icon: Trophy,
-    title: 'WINNER — AI FOR ALL HACKATHON 2026',
-    subtitle: 'INDIA AI IMPACT SUMMIT',
-    description: 'Secured 2nd place among elite developers, placing in the top 1% of participants nationwide.',
-    color: '#D1FF00', // Lime
-    index: '01'
-  },
-  {
-    icon: Rocket,
-    title: 'TOP PERFORMER — HACKSAGON 2026',
-    subtitle: 'NATIONAL LEVEL HACKATHON',
-    description: 'Distinguished as a top performer among 2600+ competing teams from across the country.',
-    color: '#00f2ff', // Cyan
-    index: '02'
-  },
-  {
-    icon: Award,
-    title: 'FINALIST — OPENAI X NXTWAVE 2025',
-    subtitle: 'AI PRODUCT INNOVATION',
-    description: 'Recognized for product innovation in AI-based solutions at the national Buildathon.',
-    color: '#bd00ff', // Purple
-    index: '03'
-  },
-  {
-    icon: Target,
-    title: 'RANK 1578 CODEFEST\'25',
-    subtitle: 'NATIONAL COMPETITIVE PROGRAMMING',
-    description: 'Demonstrated algorithmic excellence in a high-stakes national programming contest.',
-    color: '#ff0055', // Pink
-    index: '04'
-  },
-  {
-    icon: Code2,
-    title: '300+ DSA PROBLEMS SOLVED',
-    subtitle: 'PROBLEM SOLVING EXCELLENCE',
-    description: 'Consistent practice and mastery of complex data structures and algorithmic challenges.',
-    color: '#D1FF00', // Lime
-    index: '05'
-  }
-]
-
-function AchievementCard({ achievement, index, isInView }: any) {
+function HighlightCard({ a }: { a: Achievement }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-      animate={isInView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.8, delay: index * 0.1 }}
-      whileTap={{ scale: 0.98 }}
-      className="group relative bg-[#070707] border border-white/5 p-8 transition-all duration-500 hover:bg-[#0a0a0a] overflow-hidden"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative mb-20 overflow-hidden border border-primary/30 bg-gradient-to-br from-primary/[0.08] via-[#070707] to-[#070707] p-7 md:p-12"
     >
-      {/* Dynamic Glow Background */}
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 pointer-events-none"
-        style={{ backgroundColor: achievement.color }}
-      />
+      <div aria-hidden="true" className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-[100px]" />
+      <div aria-hidden="true" className="sheen pointer-events-none absolute inset-0" />
 
-      {/* Kinetic Border */}
-      <div
-        className="absolute left-0 top-0 w-[2px] h-0 transition-all duration-500 group-hover:h-full z-20"
-        style={{
-          backgroundColor: achievement.color,
-          boxShadow: `0 0 15px ${achievement.color}`
-        }}
-      />
-
-      <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-8">
-        {/* Achievement Index */}
-        <div className="relative shrink-0">
-          <div 
-            className="w-12 h-12 flex items-center justify-center border border-white/10 rounded-sm bg-white/[0.02] group-hover:border-white/20 transition-all duration-500"
-            style={{ 
-              color: achievement.color,
-              boxShadow: `0 0 20px ${achievement.color}11`
-            }}
-          >
-            <span className="font-mono text-xl font-bold">{achievement.index}</span>
-          </div>
+      <div className="relative z-10 grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
+        <div>
+          <span className="mb-5 inline-flex items-center gap-2 bg-primary px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-black">
+            <Award className="h-3.5 w-3.5" /> Highlight · {a.year}
+          </span>
+          <h3 className="mb-3 font-[family-name:var(--font-anton)] text-4xl uppercase leading-[0.95] text-white md:text-6xl">
+            {a.title}
+          </h3>
+          <p className="mb-4 font-mono text-sm uppercase tracking-[0.2em] text-primary">{a.result}</p>
+          <p className="mb-8 max-w-xl leading-relaxed text-white/70">{a.description}</p>
+          {a.link && (
+            <a
+              href={a.link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 border border-primary px-5 py-3 font-mono text-xs uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-black"
+            >
+              View {a.link.label} <ArrowUpRight className="h-4 w-4" />
+            </a>
+          )}
         </div>
 
-        {/* Content Section */}
-        <div className="flex-1">
-          <div className="flex flex-col md:flex-row md:items-baseline gap-4 mb-2">
-            <h3 className="font-[family-name:var(--font-anton)] text-3xl md:text-4xl text-white tracking-tight uppercase group-hover:text-primary transition-colors">
-              <style jsx>{`
-                .group:hover h3 {
-                  color: ${achievement.color} !important;
-                }
-              `}</style>
-              {achievement.title}
-            </h3>
-            <span className="font-mono text-[9px] tracking-[0.4em] text-white/20 uppercase">
-              {achievement.subtitle}
-            </span>
+        <div className="grid grid-cols-2 gap-px border border-white/10 bg-white/10">
+          <div className="col-span-2 bg-black p-6">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">Final rank</span>
+            <p className="font-[family-name:var(--font-anton)] text-7xl leading-none text-primary md:text-8xl text-glow">
+              <Counter value={8} prefix="#" duration={1.2} />
+            </p>
           </div>
-          <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl group-hover:text-white/60 transition-colors">
-            {achievement.description}
-          </p>
-        </div>
-
-        {/* Status indicator (HUD element) */}
-        <div className="hidden lg:flex flex-col items-end gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
-          <div className="w-12 h-1 bg-white/10 overflow-hidden">
-            <div className="w-full h-full origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-1000" style={{ backgroundColor: achievement.color }} />
+          <div className="bg-black p-5">
+            <Counter value={80000} suffix="+" className="block font-[family-name:var(--font-anton)] text-3xl text-white" />
+            <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">teams</span>
           </div>
-          <span className="font-mono text-[8px] tracking-tighter text-white/40">AUTH_VERIFIED</span>
+          <div className="bg-black p-5">
+            <span className="block font-[family-name:var(--font-anton)] text-3xl text-white">0.01%</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">top nationwide</span>
+          </div>
         </div>
       </div>
     </motion.div>
   )
 }
 
-export function Achievements() {
-  const ref = useRef<HTMLElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
-  const timelineRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: timelineRef,
-    offset: ["start center", "end center"]
-  })
-
-  const yParallax = useTransform(scrollYProgress, [0, 1], [30, -30])
-  const ySpring = useSpring(yParallax, { stiffness: 100, damping: 30 })
-
-  const scaleY = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  })
-
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
-  const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
-  const spotlightBg = useTransform(
-    [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
+function TimelineCard({ a, index }: { a: Achievement; index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.7 }}
+      className="group relative overflow-hidden border border-white/[0.07] bg-[#070707] p-6 transition-colors hover:bg-[#0b0b0b] md:p-7"
+    >
+      <div
+        className="absolute left-0 top-0 z-20 h-0 w-[2px] transition-all duration-500 group-hover:h-full"
+        style={{ backgroundColor: a.color, boxShadow: `0 0 15px ${a.color}` }}
+      />
+      <div className="mb-3 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.3em]">
+        <span style={{ color: a.color }}>{a.org}</span>
+        <span className="text-white/30">{a.year}</span>
+      </div>
+      <h3 className="mb-1 font-[family-name:var(--font-anton)] text-2xl uppercase tracking-tight text-white md:text-3xl">{a.title}</h3>
+      <p className="mb-3 font-mono text-xs uppercase tracking-wider" style={{ color: a.color }}>
+        {a.result}
+      </p>
+      <p className="mb-5 text-sm leading-relaxed text-muted-foreground transition-colors group-hover:text-white/70">{a.description}</p>
+      {a.link && (
+        <a
+          href={a.link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-white/50 transition-colors hover:text-white"
+        >
+          {a.link.label} <ArrowUpRight className="h-3.5 w-3.5" />
+        </a>
+      )}
+    </motion.div>
   )
+}
 
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!ref.current) return
-      const rect = ref.current.getBoundingClientRect()
-      mouseX.set(e.clientX - rect.left)
-      mouseY.set(e.clientY - rect.top)
-    }
+export function Achievements() {
+  const timelineRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: timelineRef, offset: ['start center', 'end center'] })
+  const scaleY = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
 
-    window.addEventListener('mousemove', handleGlobalMouseMove)
-    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
-  }, [])
-
-  const rotateX = useTransform(spotlightY, [0, 1000], [4, -4])
-  const rotateY = useTransform(spotlightX, [0, 1000], [-4, 4])
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
-  }
+  const [highlight, ...rest] = achievements
 
   return (
-    <section
-      id="achievements"
-      className="relative py-48 bg-black overflow-hidden"
-      ref={ref}
-      onMouseMove={handleMouseMove}
-    >
-      {/* Dynamic Global Spotlight Layer */}
-      <motion.div
-        className="absolute inset-0 z-[50] pointer-events-none opacity-100"
-        style={{ background: spotlightBg }}
-      />
-
-      {/* Background Noise/Grain Overlay - Bulletproof Data-URI */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')]" />
-      {/* Background Ghost Text */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-[family-name:var(--font-anton)] text-[25vw] text-white/[0.01] select-none pointer-events-none uppercase tracking-tighter whitespace-nowrap z-0">
-        Roadmap
+    <section id="achievements" className="relative overflow-hidden bg-black py-28 md:py-40">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-[family-name:var(--font-anton)] text-[25vw] uppercase tracking-tighter text-white/[0.015] select-none"
+      >
+        Milestones
       </div>
 
-      <motion.div 
-        style={{ rotateX, rotateY, y: ySpring, perspective: 1000 }}
-        className="relative z-10 max-w-7xl mx-auto px-6"
-      >
-        {/* Section Heading - Perfectly Matched to Projects Style */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="relative mb-40 text-center"
-        >
-          <span className="font-mono text-primary text-[10px] tracking-[0.4em] mb-4 block uppercase">04 - ACHIEVEMENTS</span>
-          <h2 className="font-[family-name:var(--font-anton)] text-5xl md:text-8xl flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 leading-none group">
-            <span className="text-white uppercase group-hover:text-primary transition-colors duration-500">ACHIEVEMENTS &</span>
-            <span className="text-transparent [-webkit-text-stroke:1.5px_rgba(209,255,0,0.5)] uppercase relative inline-block">
-              MILESTONES_
-              <motion.span
-                className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-              />
-            </span>
-          </h2>
-        </motion.div>
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-6">
+        <SectionHeading
+          index="04"
+          eyebrow="Achievements"
+          solid="Wins &"
+          outline="Milestones"
+          description="Hackathon podiums, a peer-reviewed publication and selective programs. Every claim links to its certificate."
+        />
 
-        {/* Roadmap Timeline */}
+        <HighlightCard a={highlight} />
+
         <div className="relative" ref={timelineRef}>
-          {/* Central Power Line */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[2px] bg-white/[0.03] overflow-hidden">
-            <motion.div 
+          <div className="absolute bottom-0 left-3 top-0 w-[2px] overflow-hidden bg-white/[0.04] md:left-1/2 md:-translate-x-1/2">
+            <motion.div
               style={{ scaleY }}
-              className="w-full h-full bg-gradient-to-b from-[#D1FF00] via-[#00f2ff] to-[#bd00ff] origin-top shadow-[0_0_25px_rgba(209,255,0,0.6)]"
+              className="h-full w-full origin-top bg-gradient-to-b from-[#D1FF00] via-[#00E5FF] to-[#B026FF] shadow-[0_0_25px_rgba(209,255,0,0.6)]"
             />
           </div>
 
-          <div className="flex flex-col gap-12">
-            {achievements.map((achievement, index) => (
-              <div
-                key={achievement.title}
-                className={`flex items-center justify-center w-full ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                  }`}
-              >
-                {/* Achievement Card Wrapper */}
-                <div className="w-full md:w-[calc(50%-60px)]">
-                  <AchievementCard
-                    achievement={achievement}
-                    index={index}
-                    isInView={isInView}
-                  />
+          <div className="flex flex-col gap-8 md:gap-12">
+            {rest.map((a, i) => (
+              <div key={a.title} className={`relative flex items-center ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                <div className="w-full pl-10 md:w-[calc(50%-48px)] md:pl-0">
+                  <TimelineCard a={a} index={i} />
                 </div>
-
-                {/* Central Node */}
-                <div className="hidden md:flex items-center justify-center w-[120px] relative z-20">
+                <div className="absolute left-3 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 md:static md:flex md:w-24 md:translate-x-0 md:translate-y-0 md:justify-center">
                   <motion.div
                     initial={{ scale: 0 }}
-                    animate={isInView ? { scale: 1 } : {}}
-                    transition={{ duration: 0.5, delay: index * 0.1 + 0.5 }}
-                    className="w-4 h-4 rounded-full bg-black border-2 transition-all duration-500 group-hover:scale-150"
-                    style={{
-                      borderColor: achievement.color,
-                      boxShadow: `0 0 15px ${achievement.color}`
-                    }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                    className="h-4 w-4 rounded-full border-2 bg-black"
+                    style={{ borderColor: a.color, boxShadow: `0 0 15px ${a.color}` }}
                   />
                 </div>
-
-                {/* Empty spacer for the other side */}
-                <div className="hidden md:block w-[calc(50%-60px)]" />
+                <div className="hidden md:block md:w-[calc(50%-48px)]" />
               </div>
             ))}
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   )
 }

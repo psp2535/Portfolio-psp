@@ -1,53 +1,50 @@
-# Portfolio v2.0
+# Portfolio v3.0 · Pathange Sai Pranav
 
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-A high-end, industrial "Tech-Noir" digital experience. This portfolio is engineered with a focus on immersive kinetic interactions, global lighting systems, and technical HUD-style aesthetics.
+A "Tech-Noir" portfolio for an AI engineer and full-stack developer. Live at **[portfolio-psp.vercel.app](https://portfolio-psp.vercel.app)**.
 
-## Key Terminal Features
+## What's inside
 
-- **Cinematic 3D Interaction:** Every section features a mouse-reactive 3D tilt engine with weighted physics.
-- **Atmospheric Lighting:** A unified, cursor-tracking radial spotlight system that interacts with technical UI elements.
-- **Kinetic Scroll Engine:** Integrated **Lenis Smooth Scroll** coupled with **Framer Motion** for sophisticated vertical parallax drifts.
-- **Dynamic Achievements Roadmap:** A scroll-synced "Power Line" that physically bridges career milestones as you explore.
-- **Industrial HUD Footer:** Real-time clock, system diagnostic readouts, and AES-256 encryption aesthetics.
-- **Live Communication Terminal:** Functional contact form powered by **Formspree** with custom transmission animations.
+- **Case-study projects.** Each flagship build gets real metrics and its own animated visual: an audit-report terminal (Brand AI Readiness Audit), a greedy-vs-ACO route map (Traffic AI), and a multilingual assistant chat (BizNova).
+- **Achievements timeline.** A scroll-synced "power line", with every award linked to its certificate.
+- **Skills orbit.** A CSS-driven orbit that pauses on hover. Hovering or tapping a category lights up its skills.
+- **Competitive programming.** LeetCode and CodeChef cards with progress toward the next rating tier.
+- **⌘K / Ctrl+K command palette.** Jump to sections, open projects and profiles, copy the email, or open the resume.
+- **One global spotlight.** A single rAF and CSS-variable cursor light replaces six per-section listeners.
+- **Built to be read by machines.** JSON-LD (Person, SoftwareSourceCode, ScholarlyArticle), a generated OG image, `sitemap.xml`, `robots.txt` and `/llms.txt`.
+- **Accessible.** Skip link, reduced-motion support (no Lenis, no intro, no looping animations) and keyboard-focusable orbit nodes.
 
-## Tech Stack
+## Updating content
 
-- **Framework:** Next.js 15 (App Router)
-- **Styling:** Tailwind CSS + Custom Vanilla CSS Utilities
-- **Animations:** Framer Motion (useScroll, useSpring, useTransform)
-- **Smooth Scrolling:** Lenis
-- **Icons:** Lucide React + React Icons
-- **Typefaces:** Anton (HUD Headers), JetBrains Mono (Technical Data), Inter (Content)
+All content lives in **[`lib/data.ts`](lib/data.ts)**: profile, projects, achievements, skills and coding stats.
+To update the resume, replace `public/Pathange_Sai_Pranav_Resume.pdf` (or change `RESUME_PATH`).
+Also update `public/llms.txt` when the resume changes.
 
-## Local Installation
+## Structure
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/psp2535/Portfolio-psp.git
-   ```
+```
+app/            layout (SEO + JSON-LD), page, OG image, sitemap, robots, 404
+components/
+  sections/     navigation, hero, about, skills, projects (+ project-visuals), achievements, coding, contact, footer
+  ui/           command-palette, global-spotlight, counter, section-heading, cursor, loader, shadcn primitives
+  providers/    Lenis smooth scroll + useScrollTo()
+lib/data.ts     single source of truth for content
+```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+## Run locally
 
-3. **Configure Environment:**
-   Update your Formspree ID in `components/sections/contact.tsx` to enable the communication terminal.
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # production build (type-checked)
+```
 
-4. **Launch Dev Environment:**
-   ```bash
-   npm run dev
-   ```
-
-## Credits
-
-Built with precision by **Pathange Sai Pranav (PSP)**.
+The contact form posts to Formspree (`FORMSPREE_ENDPOINT` in `components/sections/contact.tsx`).
 
 ---
-*System Status: Nominal | Connection: Encrypted*
+
+Built by **Pathange Sai Pranav (PSP)**.

@@ -1,259 +1,268 @@
 'use client'
 
-import { useRef, useState, useMemo, useEffect } from 'react'
-import { motion, useInView, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion'
+import { useEffect, useRef, useState, type ComponentType } from 'react'
+import { motion } from 'framer-motion'
 import {
-  FaReact, FaNodeJs, FaPython, FaJs, FaHtml5, FaCss3Alt,
-  FaBootstrap, FaAws, FaGithub, FaCloudflare, FaCode,
-  FaGitAlt, FaDatabase, FaGoogle
-} from 'react-icons/fa'
-import {
-  SiMongodb, SiExpress, SiPostgresql, SiTailwindcss,
-  SiVercel, SiPostman, SiPrisma, SiCplusplus
+  SiC,
+  SiCplusplus,
+  SiCss,
+  SiExpress,
+  SiGit,
+  SiGithub,
+  SiGooglegemini,
+  SiHtml5,
+  SiJavascript,
+  SiJsonwebtokens,
+  SiMongodb,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiNumpy,
+  SiPandas,
+  SiPostgresql,
+  SiPostman,
+  SiPython,
+  SiReact,
+  SiTailwindcss,
+  SiTypescript,
 } from 'react-icons/si'
-import { Star } from 'lucide-react'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { TbApi, TbBrain } from 'react-icons/tb'
+import { Drama, Sparkles } from 'lucide-react'
+import { SectionHeading } from '@/components/ui/section-heading'
+import { skillGroups } from '@/lib/data'
 
-const allSkills = [
-  // Core Orbit
-  { name: 'C++', icon: SiCplusplus, color: '#D1FF00', orbit: 1 },
-  { name: 'React.js', icon: FaReact, color: '#61DAFB', orbit: 1 },
-  { name: 'Node.js', icon: FaNodeJs, color: '#339933', orbit: 1 },
-  { name: 'MongoDB', icon: SiMongodb, color: '#47A248', orbit: 1 },
-
-  // Middle Orbit
-  { name: 'Python', icon: FaPython, color: '#3776AB', orbit: 2 },
-  { name: 'JavaScript', icon: FaJs, color: '#F7DF1E', orbit: 2 },
-  { name: 'Express.js', icon: SiExpress, color: '#ffffff', orbit: 2 },
-  { name: 'PostgreSQL', icon: SiPostgresql, color: '#4169E1', orbit: 2 },
-  { name: 'AWS', icon: FaAws, color: '#FF9900', orbit: 2 },
-  { name: 'Git', icon: FaGitAlt, color: '#F05032', orbit: 2 },
-
-  // Outer Orbit
-  { name: 'HTML5', icon: FaHtml5, color: '#E34F26', orbit: 3 },
-  { name: 'CSS3', icon: FaCss3Alt, color: '#1572B6', orbit: 3 },
-  { name: 'Tailwind', icon: SiTailwindcss, color: '#06B6D4', orbit: 3 },
-  { name: 'Bootstrap', icon: FaBootstrap, color: '#7952B3', orbit: 3 },
-  { name: 'GCP', icon: FaGoogle, color: '#4285F4', orbit: 3 },
-  { name: 'Vercel', icon: SiVercel, color: '#ffffff', orbit: 3 },
-  { name: 'Cloudflare', icon: FaCloudflare, color: '#F38020', orbit: 3 },
-  { name: 'GitHub', icon: FaGithub, color: '#ffffff', orbit: 3 },
-  { name: 'Postman', icon: SiPostman, color: '#FF6C37', orbit: 3 },
-  { name: 'Prisma', icon: SiPrisma, color: '#2D3748', orbit: 3 }
-]
-
-export function Skills() {
-  const ref = useRef<HTMLElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
-  const [mounted, setMounted] = useState(false)
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
-  const isMobile = useIsMobile()
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Motion values for spotlight
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  })
-
-  const yParallax = useTransform(scrollYProgress, [0, 1], [50, -50])
-  const ySpring = useSpring(yParallax, { stiffness: 100, damping: 30 })
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
-  }
-
-  const spotlightX = useSpring(mouseX, { damping: 30, stiffness: 200 })
-  const spotlightY = useSpring(mouseY, { damping: 30, stiffness: 200 })
-  const spotlightBg = useTransform(
-    [spotlightX, spotlightY],
-    ([x, y]) => `radial-gradient(circle 500px at ${x}px ${y}px, rgba(209, 255, 0, 0.3), transparent 80%)`
-  )
-
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!ref.current) return
-      const rect = ref.current.getBoundingClientRect()
-      mouseX.set(e.clientX - rect.left)
-      mouseY.set(e.clientY - rect.top)
-    }
-
-    window.addEventListener('mousemove', handleGlobalMouseMove)
-    return () => window.removeEventListener('mousemove', handleGlobalMouseMove)
-  }, [])
-
-  const rotateX = useTransform(spotlightY, [0, 1000], [5, -5])
-  const rotateY = useTransform(spotlightX, [0, 1000], [-5, 5])
-
-  return (
-    <section
-      id="skills"
-      className="relative py-48 bg-black overflow-hidden min-h-screen flex items-center justify-center"
-      ref={ref}
-    >
-      {mounted && (
-        <>
-          {/* Dynamic Global Spotlight Layer */}
-          <motion.div
-            className="absolute inset-0 z-[50] pointer-events-none opacity-100"
-            style={{ background: spotlightBg }}
-          />
-
-          {/* Background Section Title (Ghost) */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-[family-name:var(--font-anton)] text-[25vw] text-white/[0.01] select-none pointer-events-none uppercase tracking-tighter whitespace-nowrap">
-            Tech Stack
-          </div>
-
-          <motion.div 
-            style={{ rotateX, rotateY, y: ySpring, perspective: 1000 }}
-            className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col items-center"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8 }}
-              className="relative mb-32 text-center"
-            >
-              {/* Background Section Number */}
-              <span className="absolute -top-24 left-1/2 -translate-x-1/2 font-[family-name:var(--font-anton)] text-[15vw] text-white/[0.03] select-none pointer-events-none">
-                02
-              </span>
-
-              <div className="relative z-10">
-                <span className="font-mono text-primary text-[10px] tracking-[0.4em] mb-4 block uppercase">02 - SKILLS</span>
-                <h2 className="font-[family-name:var(--font-anton)] text-5xl md:text-9xl flex flex-row items-baseline gap-6 md:gap-10 leading-none group">
-                  <span className="text-white uppercase group-hover:text-primary transition-colors duration-500">SKILLS</span>
-                  <span className="text-transparent [-webkit-text-stroke:1.5px_rgba(209,255,0,0.5)] uppercase relative inline-block">
-                    ORBIT_
-                    <motion.span 
-                      className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-                    />
-                  </span>
-                </h2>
-              </div>
-            </motion.div>
-
-            {/* The Orbiting System Container */}
-            <div className="relative w-full aspect-square max-w-[800px] flex items-center justify-center">
-
-              {/* Core Center Node */}
-              <motion.div
-                animate={{
-                  boxShadow: ["0 0 20px rgba(209,255,0,0.2)", "0 0 50px rgba(209,255,0,0.4)", "0 0 20px rgba(209,255,0,0.2)"]
-                }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="z-50 w-16 h-16 md:w-24 md:h-24 rounded-full bg-black border-2 border-primary flex items-center justify-center group"
-              >
-                <Star className="text-primary w-6 h-6 md:w-10 md:h-10 group-hover:scale-125 transition-transform" />
-              </motion.div>
-
-              {/* Orbits */}
-              <OrbitGroup
-                skills={allSkills.filter(s => s.orbit === 1)}
-                radius={isMobile ? 60 : 140}
-                speed={40}
-                setHoveredSkill={setHoveredSkill}
-                hoveredSkill={hoveredSkill}
-                reverse={false}
-              />
-              <OrbitGroup
-                skills={allSkills.filter(s => s.orbit === 2)}
-                radius={isMobile ? 100 : 240}
-                speed={60}
-                setHoveredSkill={setHoveredSkill}
-                hoveredSkill={hoveredSkill}
-                reverse={true}
-              />
-              <OrbitGroup
-                skills={allSkills.filter(s => s.orbit === 3)}
-                radius={isMobile ? 145 : 360}
-                speed={90}
-                setHoveredSkill={setHoveredSkill}
-                hoveredSkill={hoveredSkill}
-                reverse={false}
-              />
-            </div>
-          </motion.div>
-        </>
-      )}
-    </section>
-  )
+type Group = (typeof skillGroups)[number]['title']
+type OrbitSkill = {
+  name: string
+  icon: ComponentType<{ className?: string; style?: React.CSSProperties }>
+  color: string
+  group: Group
 }
 
-function OrbitGroup({ skills, radius, speed, setHoveredSkill, hoveredSkill, reverse }: any) {
+const rings: { skills: OrbitSkill[]; duration: number; reverse?: boolean; ratio: number }[] = [
+  {
+    ratio: 0.36,
+    duration: 38,
+    skills: [
+      { name: 'Python', icon: SiPython, color: '#3776AB', group: 'Languages' },
+      { name: 'C++', icon: SiCplusplus, color: '#00599C', group: 'Languages' },
+      { name: 'React.js', icon: SiReact, color: '#61DAFB', group: 'Frontend' },
+      { name: 'Node.js', icon: SiNodedotjs, color: '#5FA04E', group: 'Backend' },
+    ],
+  },
+  {
+    ratio: 0.63,
+    duration: 60,
+    reverse: true,
+    skills: [
+      { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E', group: 'Languages' },
+      { name: 'MongoDB', icon: SiMongodb, color: '#47A248', group: 'Databases' },
+      { name: 'Express.js', icon: SiExpress, color: '#ffffff', group: 'Backend' },
+      { name: 'Gemini API', icon: SiGooglegemini, color: '#8E75FF', group: 'AI & Data' },
+      { name: 'PostgreSQL', icon: SiPostgresql, color: '#4169E1', group: 'Databases' },
+      { name: 'Playwright', icon: Drama, color: '#2EAD33', group: 'Tools' },
+      { name: 'Machine Learning', icon: TbBrain, color: '#FF6F61', group: 'AI & Data' },
+    ],
+  },
+  {
+    ratio: 0.9,
+    duration: 90,
+    skills: [
+      { name: 'C', icon: SiC, color: '#A8B9CC', group: 'Languages' },
+      { name: 'TypeScript', icon: SiTypescript, color: '#3178C6', group: 'Languages' },
+      { name: 'REST APIs', icon: TbApi, color: '#D1FF00', group: 'Backend' },
+      { name: 'JWT Auth', icon: SiJsonwebtokens, color: '#FB015B', group: 'Backend' },
+      { name: 'Next.js', icon: SiNextdotjs, color: '#ffffff', group: 'Frontend' },
+      { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#06B6D4', group: 'Frontend' },
+      { name: 'HTML5', icon: SiHtml5, color: '#E34F26', group: 'Frontend' },
+      { name: 'CSS3', icon: SiCss, color: '#1572B6', group: 'Frontend' },
+      { name: 'Pandas', icon: SiPandas, color: '#E70488', group: 'AI & Data' },
+      { name: 'NumPy', icon: SiNumpy, color: '#4DABCF', group: 'AI & Data' },
+      { name: 'Git', icon: SiGit, color: '#F05032', group: 'Tools' },
+      { name: 'GitHub', icon: SiGithub, color: '#ffffff', group: 'Tools' },
+      { name: 'Postman', icon: SiPostman, color: '#FF6C37', group: 'Tools' },
+    ],
+  },
+]
+
+const groupColors: Record<string, string> = {
+  Languages: '#D1FF00',
+  Backend: '#5FA04E',
+  Databases: '#47A248',
+  Frontend: '#61DAFB',
+  'AI & Data': '#8E75FF',
+  Tools: '#FF6C37',
+}
+
+export function Skills() {
+  const systemRef = useRef<HTMLDivElement>(null)
+  const [size, setSize] = useState(0)
+  const [activeSkill, setActiveSkill] = useState<string | null>(null)
+  const [activeGroup, setActiveGroup] = useState<string | null>(null)
+
+  useEffect(() => {
+    const el = systemRef.current
+    if (!el) return
+    const ro = new ResizeObserver(([entry]) => setSize(entry.contentRect.width))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const nodeSize = size < 420 ? 34 : 48
+  const activeSkillObj = rings.flatMap((r) => r.skills).find((s) => s.name === activeSkill)
+
+  const isLit = (s: OrbitSkill) =>
+    activeSkill ? activeSkill === s.name : activeGroup ? activeGroup === s.group : false
+  const isDim = (s: OrbitSkill) => (activeSkill || activeGroup) && !isLit(s)
+
   return (
-    <motion.div
-      animate={{ rotate: reverse ? -360 : 360 }}
-      transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
-      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      style={{ zIndex: skills.some((s: any) => s.name === hoveredSkill) ? 100 : 1 }}
-    >
-      {/* Visual Orbit Ring */}
+    <section id="skills" className="relative overflow-hidden bg-black py-28 md:py-40">
       <div
-        className="absolute rounded-full border border-white/5 pointer-events-none"
-        style={{ width: radius * 2, height: radius * 2 }}
-      />
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-[family-name:var(--font-anton)] text-[25vw] uppercase tracking-tighter text-white/[0.015] select-none"
+      >
+        Tech Stack
+      </div>
 
-      {skills.map((skill: any, i: number) => {
-        const angle = (i / skills.length) * Math.PI * 2
-        const x = Math.cos(angle) * radius
-        const y = Math.sin(angle) * radius
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-6">
+        <SectionHeading
+          index="02"
+          eyebrow="Skills"
+          solid="Skills"
+          outline="Orbit"
+          description="The stack behind my audit engines, routing research and MERN platforms. Hover or tap a category to light up its orbit."
+        />
 
-        return (
+        <div className="grid items-center gap-16 lg:grid-cols-2">
+          {/* Orbit system */}
           <motion.div
-            key={skill.name}
-            className="absolute pointer-events-auto"
-            style={{ x, y }}
-            animate={{ rotate: reverse ? 360 : -360 }}
-            transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            ref={systemRef}
+            className="orbit-system relative mx-auto aspect-square w-full max-w-[560px]"
+            onMouseLeave={() => setActiveSkill(null)}
           >
-            <motion.div
-              onMouseEnter={() => setHoveredSkill(skill.name)}
-              onMouseLeave={() => setHoveredSkill(null)}
-              onClick={() => setHoveredSkill(hoveredSkill === skill.name ? null : skill.name)}
-              whileHover={{ scale: 1.3, zIndex: 100 }}
-              className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-black border border-white/10 flex items-center justify-center cursor-pointer group hover:border-primary transition-all shadow-[0_0_20px_rgba(0,0,0,1)] relative"
-              style={{
-                boxShadow: hoveredSkill === skill.name ? `0 0 30px ${skill.color}55` : 'none',
-                zIndex: hoveredSkill === skill.name ? 200 : 1
-              }}
-            >
-              <skill.icon
-                className="w-6 h-6 md:w-8 md:h-8 transition-colors"
-                style={{ color: hoveredSkill === skill.name ? skill.color : '#666' }}
-              />
+            {/* Core */}
+            <div className="absolute left-1/2 top-1/2 z-30 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-2 border-primary bg-black text-center animate-pulse-glow md:h-28 md:w-28">
+              {activeSkillObj ? (
+                <>
+                  <activeSkillObj.icon className="mb-1 h-6 w-6 md:h-8 md:w-8" style={{ color: activeSkillObj.color }} />
+                  <span className="px-1 font-mono text-[8px] uppercase leading-tight tracking-wider text-white md:text-[10px]">
+                    {activeSkillObj.name}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-6 w-6 text-primary md:h-9 md:w-9" />
+                  <span className="mt-1 font-mono text-[8px] uppercase tracking-widest text-white/50 md:text-[9px]">
+                    {activeGroup ?? 'Stack'}
+                  </span>
+                </>
+              )}
+            </div>
 
-              {/* Floating Label Beside Icon */}
-              <AnimatePresence>
-                {hoveredSkill === skill.name && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20, scale: 0.5 }}
-                    animate={{ opacity: 1, x: 50, scale: 1 }}
-                    exit={{ opacity: 0, x: 20, scale: 0.5 }}
-                    className="absolute bottom-full mb-4 md:bottom-auto md:left-full md:ml-4 z-[110] pointer-events-none left-1/2 -translate-x-1/2 md:translate-x-0"
+            {size > 0 &&
+              rings.map((ring, ri) => {
+                const radius = (size / 2) * ring.ratio
+                return (
+                  <div
+                    key={ri}
+                    className={`orbit absolute inset-0 ${ring.reverse ? 'orbit-reverse' : ''}`}
+                    style={{ ['--orbit-duration' as string]: `${ring.duration}s` }}
                   >
-                    <div className="bg-black/90 backdrop-blur-md border border-primary/50 px-4 py-1.5 rounded-sm whitespace-nowrap shadow-[0_0_20px_rgba(209,255,0,0.3)]">
-                      <span className="font-mono text-sm text-primary uppercase tracking-widest font-bold">
-                        {skill.name}
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
+                    <div
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/[0.07]"
+                      style={{ width: radius * 2, height: radius * 2 }}
+                    />
+                    {ring.skills.map((skill, i) => {
+                      const angle = (i / ring.skills.length) * Math.PI * 2 + ri * 0.6
+                      const x = Math.cos(angle) * radius
+                      const y = Math.sin(angle) * radius
+                      const lit = isLit(skill)
+                      const dim = isDim(skill)
+                      return (
+                        <div
+                          key={skill.name}
+                          className="absolute left-1/2 top-1/2"
+                          style={{ transform: `translate(${x - nodeSize / 2}px, ${y - nodeSize / 2}px)`, zIndex: lit ? 20 : 10 }}
+                        >
+                          <div className="orbit-item">
+                            <button
+                              type="button"
+                              aria-label={skill.name}
+                              onMouseEnter={() => setActiveSkill(skill.name)}
+                              onFocus={() => setActiveSkill(skill.name)}
+                              onBlur={() => setActiveSkill(null)}
+                              onClick={() => setActiveSkill((s) => (s === skill.name ? null : skill.name))}
+                              className="flex items-center justify-center rounded-full border bg-black transition-all duration-300"
+                              style={{
+                                width: nodeSize,
+                                height: nodeSize,
+                                borderColor: lit ? skill.color : 'rgba(255,255,255,0.12)',
+                                boxShadow: lit ? `0 0 24px ${skill.color}88` : '0 0 20px rgba(0,0,0,1)',
+                                opacity: dim ? 0.25 : 1,
+                                transform: lit ? 'scale(1.25)' : 'scale(1)',
+                              }}
+                            >
+                              <skill.icon
+                                className="h-1/2 w-1/2 transition-colors duration-300"
+                                style={{ color: lit || (!activeSkill && !activeGroup) ? skill.color : '#666' }}
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })}
           </motion.div>
-        )
-      })}
-    </motion.div>
+
+          {/* Category cards */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {skillGroups.map((group, i) => {
+              const color = groupColors[group.title] ?? '#D1FF00'
+              const active = activeGroup === group.title
+              return (
+                <motion.div
+                  key={group.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.5, delay: i * 0.07 }}
+                  onMouseEnter={() => setActiveGroup(group.title)}
+                  onMouseLeave={() => setActiveGroup(null)}
+                  onClick={() => setActiveGroup((g) => (g === group.title ? null : group.title))}
+                  className="group relative cursor-default overflow-hidden border bg-white/[0.02] p-5 transition-colors"
+                  style={{ borderColor: active ? `${color}66` : 'rgba(255,255,255,0.08)' }}
+                >
+                  <div
+                    className="absolute left-0 top-0 h-full w-[2px] origin-top transition-transform duration-500"
+                    style={{ backgroundColor: color, transform: active ? 'scaleY(1)' : 'scaleY(0)', boxShadow: `0 0 12px ${color}` }}
+                  />
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="font-mono text-xs font-bold uppercase tracking-[0.25em]" style={{ color: active ? color : '#fff' }}>
+                      {group.title}
+                    </h3>
+                    <span className="font-mono text-[10px] text-white/30">0{i + 1}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {group.items.map((item) => (
+                      <span
+                        key={item}
+                        className="border border-white/10 px-2.5 py-1 font-mono text-[11px] text-white/60 transition-colors group-hover:text-white/90"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }

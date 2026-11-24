@@ -1,0 +1,26 @@
+# Pathange Sai Pranav
+
+> AI engineer and full-stack developer. Integrated B.Tech + M.Tech (IT) student at ABV-IIITM Gwalior, India (CGPA 8.45/10, Aug 2023 – May 2028). Adobe University Hackathon 2026 Grand Finalist (Top 8 of 80,000+ teams).
+
+## Projects
+- [Brand AI Readiness Audit](https://github.com/psp2535/AdobeUniversityHackathon26): Python audit engine of 9 modular Agent Skills running 70+ checks for AI search visibility (GEO); robots.txt-respecting crawler; severity scoring (impact × reach × certainty); 635+ unit tests. Adobe University Hackathon 2026.
+- [Traffic AI · IM-VRM](https://github.com/psp2535/td-dijkstra-aco-router): Reproduced an IEEE T-ITS 2025 routing model on Microsoft T-Drive data (1.3M GPS points, 18K+ trips); ACO cut distance 13% and fuel 14%; with time-dependent Dijkstra, travel time −18%. Live: https://fleetmaster-api.vercel.app/
+- [BizNova](https://github.com/psp2535/Smart-Kirana): MERN + Gemini 2.5 Flash retail platform; 20+ REST APIs, 13 MongoDB collections, 35+ indexes; AI bill scanner; voice commands in English, Hindi, Telugu. Live: https://smart-kirana-beta.vercel.app/
+
+## Achievements
+- Adobe University Hackathon 2026: Grand Finalist, Top 8 of 80,000+ teams
+- AI for All Hackathon 2026: Winner (2nd place) among 1500+ teams
+- PAKDD 2026: Co-author, "HiBias: A Nine-Faceted Bias Annotation Dataset for Media Bias Detection in Hindi" (https://openreview.net/forum?id=mpmGNudGa0)
+- HACKSAGON 2026: Top Performer, #1 of 2,600+ teams
+- OpenAI x NxtWave Buildathon 2025: Finalist
+- Amazon ML Summer School 2026: Selected
+
+## Competitive programming
+- LeetCode (https://leetcode.com/u/Suraj2304/): 360+ problems, contest rating 1567
+- CodeChef (https://www.codechef.com/users/saipranav_974): 2★, max rating 1451
+
+## Contact
+- Email: saipranav974@gmail.com
+- GitHub: https://github.com/psp2535
+- LinkedIn: https://www.linkedin.com/in/pathangesaipranav
+- Resume: https://portfolio-psp.vercel.app/Pathange_Sai_Pranav_Resume.pdf

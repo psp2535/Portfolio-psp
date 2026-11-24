@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 const loadingSteps = [
   "INITIALIZING_CORE...",
+  "LOADING_AGENT_SKILLS...",
+  "OPTIMIZING_ROUTES_ACO...",
   "MAPPING_TECH_ORBITS...",
-  "SYNCING_NEURAL_LINKS...",
-  "BOOTING_SYSTEM_V2.0...",
-  "CALIBRATING_SENSORS...",
+  "BOOTING_SYSTEM_V3.0...",
   "ACCESS_GRANTED_"
 ]
 
@@ -18,29 +18,39 @@ export function LoadingScreen() {
   const [stepIndex, setStepIndex] = useState(0)
 
   useEffect(() => {
+    // Only play the intro once per browser session, and never for reduced-motion users.
+    let seen = false
+    try {
+      seen = sessionStorage.getItem('psp-intro') === '1'
+      sessionStorage.setItem('psp-intro', '1')
+    } catch {}
+    if (seen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setIsLoading(false)
+      return
+    }
+
+    document.documentElement.style.overflow = 'hidden'
     const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
-        }
-        const next = prev + Math.random() * 8
-        // Update step based on progress
-        const step = Math.floor((next / 100) * loadingSteps.length)
-        if (step < loadingSteps.length) setStepIndex(step)
+      setProgress((prev) => {
+        const next = Math.min(100, prev + 6 + Math.random() * 10)
+        setStepIndex(Math.min(loadingSteps.length - 1, Math.floor((next / 100) * loadingSteps.length)))
+        if (next >= 100) clearInterval(interval)
         return next
       })
-    }, 150)
+    }, 110)
 
-    const timeout = setTimeout(() => {
-      setIsLoading(false)
-    }, 3500) // Slightly longer for more impact
+    const timeout = setTimeout(() => setIsLoading(false), 1700)
 
     return () => {
       clearInterval(interval)
       clearTimeout(timeout)
+      document.documentElement.style.overflow = ''
     }
   }, [])
+
+  useEffect(() => {
+    if (!isLoading) document.documentElement.style.overflow = ''
+  }, [isLoading])
 
   return (
     <AnimatePresence>
@@ -51,7 +61,7 @@ export function LoadingScreen() {
             opacity: 0,
             scale: 1.1,
             filter: "blur(10px)",
-            transition: { duration: 1, ease: "circIn" }
+            transition: { duration: 0.7, ease: "circIn" }
           }}
           className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-black overflow-hidden"
         >
@@ -113,8 +123,8 @@ export function LoadingScreen() {
                 transition={{ delay: 0.5 }}
                 className="mt-4 flex gap-8 font-mono text-[10px] text-white tracking-[0.4em] uppercase"
               >
-                <span>[ UID: 002.SAI ]</span>
-                <span>[ SYS: ACTIVE ]</span>
+                <span>[ ABV-IIITM ]</span>
+                <span>[ AI · FULL-STACK ]</span>
               </motion.div>
             </motion.div>
 
@@ -179,7 +189,7 @@ export function LoadingScreen() {
             className="absolute bottom-12 flex flex-col items-center gap-1"
           >
             <span className="font-mono text-[10px] text-white/40 tracking-[0.5em] uppercase">
-              Portfolio V2.0
+              Portfolio V3.0
             </span>
             <div className="w-8 h-[1px] bg-primary/30" />
           </motion.div>

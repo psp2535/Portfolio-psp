@@ -1,337 +1,294 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
-import { Github, Linkedin, Mail, Code2, ArrowDown, Download, Send } from 'lucide-react'
-import { gsap } from 'gsap'
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
+import { ArrowRight, Command, Sparkles } from 'lucide-react'
+import { Counter } from '@/components/ui/counter'
+import { openCommandPalette } from '@/components/ui/command-palette'
+import { useScrollTo } from '@/components/providers/smooth-scroll-provider'
+import { profile, socials, stats } from '@/lib/data'
 
-const socialLinks = [
-  { icon: Github, href: 'https://github.com/saipranav', label: 'GitHub' },
-  { icon: Linkedin, href: 'https://linkedin.com/in/saipranav', label: 'LinkedIn' },
-  { icon: Mail, href: 'mailto:saipranav@example.com', label: 'Email' },
-  { icon: Code2, href: 'https://leetcode.com/saipranav', label: 'LeetCode' },
+const marqueeItems = [
+  { name: 'GITHUB', url: socials.github },
+  { name: 'LINKEDIN', url: socials.linkedin },
+  { name: 'LEETCODE', url: socials.leetcode },
+  { name: 'CODECHEF', url: socials.codechef },
+  { name: 'GMAIL', url: socials.email },
+  { name: 'TWITTER', url: socials.twitter },
 ]
 
 export function Hero() {
   const containerRef = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end start']
-  })
+  const reduce = useReducedMotion()
+  const scrollTo = useScrollTo()
 
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', '50%'])
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end start'] })
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', '35%'])
+  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
 
-  // Mouse tracking for colorful background
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 })
-  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 })
-
-  const slowSpringX = useSpring(mouseX, { stiffness: 20, damping: 30 })
-  const slowSpringY = useSpring(mouseY, { stiffness: 20, damping: 30 })
+  // Normalised mouse position: -0.5 … 0.5 on both axes.
+  const nx = useMotionValue(0)
+  const ny = useMotionValue(0)
+  const px = useMotionValue(-1000)
+  const py = useMotionValue(-1000)
+  const fastX = useSpring(px, { stiffness: 50, damping: 20 })
+  const fastY = useSpring(py, { stiffness: 50, damping: 20 })
+  const slowX = useSpring(px, { stiffness: 20, damping: 30 })
+  const slowY = useSpring(py, { stiffness: 20, damping: 30 })
+  const orbAX = useTransform(fastX, (v) => v - 300)
+  const orbAY = useTransform(fastY, (v) => v - 300)
+  const orbBX = useTransform(slowX, (v) => v - 250)
+  const orbBY = useTransform(slowY, (v) => v - 250)
+  const tiltX = useSpring(useTransform(ny, [-0.5, 0.5], [8, -8]), { stiffness: 40, damping: 20 })
+  const tiltY = useSpring(useTransform(nx, [-0.5, 0.5], [-8, 8]), { stiffness: 40, damping: 20 })
 
   const [roleIndex, setRoleIndex] = useState(0)
-  const roles = [
-    "MERN Developer",
-    "Freelancer",
-    "Coder",
-    "OpenSource Contributor",
-    "FullStack Developer"
-  ]
-
   useEffect(() => {
-    const timer = setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % roles.length)
-    }, 5000)
-    return () => clearInterval(timer)
-  }, [roles.length])
+    const t = setInterval(() => setRoleIndex((i) => (i + 1) % profile.roles.length), 3200)
+    return () => clearInterval(t)
+  }, [])
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    mouseX.set(e.clientX)
-    mouseY.set(e.clientY)
+    if (reduce) return
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    px.set(e.clientX - rect.left)
+    py.set(e.clientY - rect.top)
+    nx.set((e.clientX - rect.left) / rect.width - 0.5)
+    ny.set((e.clientY - rect.top) / rect.height - 0.5)
   }
 
   return (
     <section
+      id="home"
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 lg:px-20"
+      className="relative flex min-h-[100svh] items-center overflow-hidden px-5 pb-32 pt-28 md:px-12 lg:px-20"
     >
-      {/* Default Static background orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full animate-orb"
-          style={{
-            background: 'radial-gradient(circle, rgba(209, 255, 0, 0.05) 0%, transparent 70%)',
-            filter: 'blur(80px)',
-          }}
+      {/* Ambient orb */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="animate-orb absolute left-1/4 top-1/4 h-[500px] w-[500px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(209,255,0,0.07) 0%, transparent 70%)', filter: 'blur(80px)' }}
         />
       </div>
 
-      {/* Interactive Colorful Mouse Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none mix-blend-screen">
-        {/* Dynamic Rainbow Orbs - Matching Cursor Style */}
+      {/* Cursor-reactive colour orbs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden mix-blend-screen" aria-hidden="true">
         <motion.div
-          className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full"
-          animate={{
-            background: [
-              'radial-gradient(circle, rgba(209,255,0,0.4) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(6,182,212,0.4) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(147,51,234,0.4) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(255,0,255,0.4) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(255,165,0,0.4) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(209,255,0,0.4) 0%, transparent 70%)',
-            ]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          style={{
-            x: useTransform(springX, x => x - 300),
-            y: useTransform(springY, y => y - 300),
-            filter: 'blur(100px)',
-          }}
+          className="hero-orb-a absolute left-0 top-0 h-[600px] w-[600px] rounded-full"
+          style={{ x: orbAX, y: orbAY }}
         />
         <motion.div
-          className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full"
-          animate={{
-            background: [
-              'radial-gradient(circle, rgba(147,51,234,0.3) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(255,0,255,0.3) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(255,165,0,0.3) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(209,255,0,0.3) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(6,182,212,0.3) 0%, transparent 70%)',
-              'radial-gradient(circle, rgba(147,51,234,0.3) 0%, transparent 70%)',
-            ]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "linear", delay: 1 }}
-          style={{
-            x: useTransform(slowSpringX, x => x - 250),
-            y: useTransform(slowSpringY, y => y - 250),
-            filter: 'blur(120px)',
-          }}
+          className="hero-orb-b absolute left-0 top-0 h-[500px] w-[500px] rounded-full"
+          style={{ x: orbBX, y: orbBY }}
         />
       </div>
 
-      {/* Social Marquee with Real Links - MOVED OUT of pointer-events-none */}
-      <div className="absolute bottom-0 left-0 w-full overflow-hidden border-t border-white/5 py-4 bg-black/50 backdrop-blur-sm z-40">
-        <div className="flex whitespace-nowrap">
-          {[1, 2].map((group) => (
-            <motion.div
-              key={group}
-              animate={{ x: [0, -1920] }}
-              transition={{
-                duration: 40,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="flex items-center gap-12 px-6 shrink-0"
-            >
-              {[
-                { name: "GITHUB", url: "https://github.com/psp2535" },
-                { name: "GMAIL", url: "mailto:saipranav974@gmail.com" },
-                { name: "LINKEDIN", url: "https://www.linkedin.com/in/pathangesaipranav" },
-                { name: "TWITTER", url: "https://x.com/psp25305?s=11" },
-                { name: "GITHUB", url: "https://github.com/psp2535" },
-                { name: "GMAIL", url: "mailto:saipranav974@gmail.com" },
-                { name: "LINKEDIN", url: "https://www.linkedin.com/in/pathangesaipranav" },
-                { name: "TWITTER", url: "https://x.com/psp25305?s=11" }
-              ].map((social, i) => (
-                <div key={i} className="flex items-center gap-12">
-                  <a
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono text-xs tracking-[0.4em] text-white/40 hover:text-primary cursor-pointer transition-colors relative z-50"
-                  >
-                    {social.name}
-                  </a>
-                  <div className="w-1.5 h-1.5 rotate-45 bg-primary" />
-                </div>
-              ))}
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      <motion.div
-        style={{ y, opacity }}
-        className="relative z-10 w-fit mx-auto flex flex-col items-start text-left pt-20"
-      >
-        {/* Top Badge */}
+      <motion.div style={{ y, opacity }} className="relative z-10 mx-auto w-full max-w-7xl">
+        {/* Status row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center gap-4 mb-2"
+          className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-3"
         >
-          <div className="flex items-center gap-2">
+          <span className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
             </span>
-            <span className="font-mono text-primary text-xs font-semibold tracking-widest uppercase">
-              OPEN TO WORK
-            </span>
-          </div>
-          <span className="font-mono text-muted-foreground text-xs tracking-widest uppercase">
-            |&nbsp;&nbsp;&nbsp;GWALIOR, INDIA
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">Open to internships</span>
           </span>
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">| {profile.location}</span>
         </motion.div>
 
-        {/* Revamped Name with Editorial Style and Perspective Parallax */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          onClick={() => scrollTo('achievements')}
+          className="group mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-primary/30 bg-primary/[0.06] py-1.5 pl-2 pr-4 text-left text-xs text-white/80 transition-colors hover:border-primary/60 hover:bg-primary/10 md:text-sm"
+        >
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-primary px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black">
+            <Sparkles className="h-3 w-3" /> New
+          </span>
+          <span className="truncate">Grand Finalist at Adobe University Hackathon 2026 · Top 8 of 80,000+ teams</span>
+          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-primary transition-transform group-hover:translate-x-1" />
+        </motion.button>
+
+        {/* Name */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4 }}
-          style={{
-            rotateX: useTransform(slowSpringY, [0, 1080], [10, -10]),
-            rotateY: useTransform(slowSpringX, [0, 1920], [-10, 10]),
-            perspective: 1000
-          }}
-          className="relative z-20 mb-8 mt-4 flex flex-col items-start cursor-default select-none"
+          style={{ rotateX: tiltX, rotateY: tiltY, transformPerspective: 1000 }}
+          className="relative mb-8 cursor-default select-none"
         >
-          <h1 className="font-[family-name:var(--font-anton)] text-[15vw] md:text-[11vw] leading-[0.9] tracking-tighter uppercase flex flex-col md:flex-row items-start md:items-baseline gap-2 md:gap-x-10">
-            <span className="relative inline-block group text-white">
-              {"PATHANGE".split("").map((char, i) => (
+          <h1 className="flex flex-col items-start gap-1 font-[family-name:var(--font-anton)] text-[16vw] uppercase leading-[0.88] tracking-tighter md:flex-row md:flex-wrap md:items-baseline md:gap-x-8 md:text-[10.5vw] xl:text-[9.5rem]">
+            <span className="sr-only">{profile.name}</span>
+            <span aria-hidden="true" className="relative inline-block text-white">
+              {profile.firstName.split('').map((char, i) => (
                 <motion.span
                   key={i}
-                  whileHover={{
-                    scaleY: 1.2,
-                    color: "#D1FF00",
-                    textShadow: "0 0 50px rgba(209,255,0,0.8)"
-                  }}
-                  whileTap={{
-                    scaleY: 1.2,
-                    color: "#D1FF00",
-                    textShadow: "0 0 50px rgba(209,255,0,0.8)"
-                  }}
-                  className="inline-block transition-all duration-300 origin-bottom"
+                  whileHover={{ scaleY: 1.2, color: '#D1FF00', textShadow: '0 0 50px rgba(209,255,0,0.8)' }}
+                  whileTap={{ scaleY: 1.2, color: '#D1FF00' }}
+                  className="inline-block origin-bottom"
                 >
                   {char}
                 </motion.span>
               ))}
             </span>
-            <span className="relative inline-block text-transparent [-webkit-text-stroke:2px_rgba(209,255,0,0.6)] hover:[-webkit-text-stroke:2px_#D1FF00] transition-all duration-500">
-              {"SAI PRANAV".split("").map((char, i) => (char === " " ? (
-                <span key={i}>&nbsp;</span>
-              ) : (
-                <motion.span
-                  key={i}
-                  whileHover={{
-                    scale: 1.1,
-                    color: "#D1FF00",
-                    textShadow: "0 0 40px rgba(209,255,0,1)"
-                  }}
-                  whileTap={{
-                    scale: 1.1,
-                    color: "#D1FF00",
-                    textShadow: "0 0 40px rgba(209,255,0,1)"
-                  }}
-                  className="inline-block transition-all duration-300"
-                >
-                  {char}
-                </motion.span>
-              )))}
-              <span className="text-primary animate-pulse ml-2">_</span>
+            <span aria-hidden="true" className="text-outline-strong relative inline-block">
+              {profile.lastName.split('').map((char, i) =>
+                char === ' ' ? (
+                  <span key={i}>&nbsp;</span>
+                ) : (
+                  <motion.span
+                    key={i}
+                    whileHover={{ scale: 1.1, color: '#D1FF00', textShadow: '0 0 40px rgba(209,255,0,1)' }}
+                    whileTap={{ scale: 1.1, color: '#D1FF00' }}
+                    className="inline-block"
+                  >
+                    {char}
+                  </motion.span>
+                ),
+              )}
+              <span className="ml-2 animate-pulse text-primary">_</span>
             </span>
           </h1>
         </motion.div>
 
-        {/* Description */}
+        {/* Tagline + role */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="space-y-6 max-w-2xl mb-10"
+          className="mb-10 max-w-3xl space-y-5"
         >
-          <motion.p 
-            whileHover={{ scale: 1.02, x: 10 }}
-            className="font-mono text-muted-foreground text-lg sm:text-xl cursor-default group transition-colors duration-300 hover:text-white"
-          >
-            <span className="text-primary group-hover:drop-shadow-[0_0_10px_#D1FF00]">//</span> I build & contribute for things I love
-          </motion.p>
-          <div className="text-xl sm:text-2xl text-muted-foreground font-light flex flex-wrap items-center gap-x-3">
-            <motion.span 
-              whileHover={{ color: "#D1FF00", scale: 1.1 }}
-              className="shrink-0 cursor-default transition-all duration-300"
-            >
-              I am a
-            </motion.span>
-            <div className="relative h-[2.5em] overflow-hidden min-w-[280px] md:min-w-[450px] perspective-[1000px] flex items-center">
+          <p className="font-mono text-base text-muted-foreground sm:text-lg">
+            <span className="text-primary">//</span> {profile.tagline}
+          </p>
+          <div className="flex flex-wrap items-center gap-x-3 text-xl font-light text-muted-foreground sm:text-2xl">
+            <span className="shrink-0">I am</span>
+            <div className="relative flex h-[2.2em] min-w-[260px] items-center overflow-hidden md:min-w-[520px]">
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={roles[roleIndex]}
+                <motion.span
+                  key={profile.roles[roleIndex]}
                   initial={{ rotateX: -90, opacity: 0, y: 20 }}
-                  animate={{
-                    rotateX: 0,
-                    opacity: 1,
-                    y: 0,
-                    textShadow: [
-                      "0 0 0px rgba(209,255,0,0)",
-                      "0 0 20px rgba(209,255,0,0.6)",
-                      "0 0 10px rgba(209,255,0,0.4)"
-                    ]
-                  }}
+                  animate={{ rotateX: 0, opacity: 1, y: 0 }}
                   exit={{ rotateX: 90, opacity: 0, y: -20 }}
-                  whileHover={{
-                    scale: 1.2,
-                    color: "#ffffff",
-                    textShadow: "0 0 30px rgba(209,255,0,1)"
-                  }}
-                  whileTap={{
-                    scale: 1.2,
-                    color: "#ffffff",
-                    textShadow: "0 0 30px rgba(209,255,0,1)"
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    ease: [0.4, 0, 0.2, 1]
-                  }}
-                  className="absolute left-0 text-primary font-[family-name:var(--font-anton)] uppercase tracking-[0.1em] whitespace-nowrap cursor-pointer origin-left"
+                  transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+                  className="absolute left-0 origin-left whitespace-nowrap font-[family-name:var(--font-anton)] uppercase tracking-[0.06em] text-primary"
                 >
-                  {roles[roleIndex]}
-                </motion.div>
+                  {/^[AEIOU]/i.test(profile.roles[roleIndex]) ? 'an ' : 'a '}
+                  {profile.roles[roleIndex]}
+                </motion.span>
               </AnimatePresence>
             </div>
           </div>
         </motion.div>
 
-        {/* CTA Buttons */}
+        {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="flex flex-col sm:flex-row items-start gap-6 mb-12"
+          className="mb-14 flex flex-wrap items-center gap-4"
         >
-          <a
-            href="#projects"
-            className="group relative px-8 py-4 bg-primary text-black font-mono uppercase tracking-wider text-sm font-bold flex items-center gap-3 hover:bg-white transition-colors rounded-sm"
+          <button
+            onClick={() => scrollTo('projects')}
+            className="group flex items-center gap-3 bg-primary px-7 py-4 font-mono text-sm font-bold uppercase tracking-wider text-black transition-colors hover:bg-white"
           >
             View my work
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </a>
-
-          <a
-            href="#contact"
-            className="px-8 py-4 border border-white/20 text-white font-mono uppercase tracking-wider text-sm hover:border-primary hover:text-primary transition-colors rounded-sm"
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </button>
+          <button
+            onClick={() => scrollTo('contact')}
+            className="border border-white/20 px-7 py-4 font-mono text-sm uppercase tracking-wider text-white transition-colors hover:border-primary hover:text-primary"
           >
             Let&apos;s talk
-          </a>
+          </button>
+          <button
+            onClick={openCommandPalette}
+            className="hidden items-center gap-2 px-2 py-4 font-mono text-xs uppercase tracking-widest text-white/40 transition-colors hover:text-primary md:flex"
+          >
+            or press
+            <kbd className="flex items-center gap-1 border border-white/15 px-2 py-1 text-white/70">
+              <Command className="h-3 w-3" /> K
+            </kbd>
+          </button>
         </motion.div>
+
+        {/* Stat strip */}
+        <motion.dl
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1 }}
+          className="grid max-w-4xl grid-cols-2 gap-px border border-white/10 bg-white/10 md:grid-cols-4"
+        >
+          {stats.map((s) => (
+            <div key={s.label} className="group bg-black/80 p-4 backdrop-blur-sm transition-colors hover:bg-[#0b0b0b] md:p-5">
+              <dt className="sr-only">{s.label}</dt>
+              <dd>
+                <Counter
+                  value={s.value}
+                  decimals={s.decimals}
+                  prefix={s.prefix}
+                  suffix={s.suffix}
+                  className="block font-[family-name:var(--font-anton)] text-3xl text-white transition-colors group-hover:text-primary md:text-4xl"
+                />
+                <span className="mt-1 block font-mono text-[10px] uppercase leading-snug tracking-wider text-white/40">
+                  {s.label}
+                </span>
+              </dd>
+            </div>
+          ))}
+        </motion.dl>
       </motion.div>
 
-      {/* SCROLL Indicator positioned at bottom right */}
+      {/* Social marquee */}
+      <div className="absolute bottom-0 left-0 z-20 w-full overflow-hidden border-t border-white/5 bg-black/60 py-4 backdrop-blur-sm">
+        <div className="marquee flex w-max">
+          {[0, 1].map((group) => (
+            <div key={group} className="flex shrink-0 items-center gap-12 pr-12" aria-hidden={group === 1}>
+              {[...marqueeItems, ...marqueeItems].map((social, i) => (
+                <div key={i} className="flex items-center gap-12">
+                  <a
+                    href={social.url}
+                    target={social.url.startsWith('mailto') ? undefined : '_blank'}
+                    rel="noopener noreferrer"
+                    tabIndex={group === 1 ? -1 : undefined}
+                    className="font-mono text-xs tracking-[0.4em] text-white/40 transition-colors hover:text-primary"
+                  >
+                    {social.name}
+                  </a>
+                  <span className="h-1.5 w-1.5 rotate-45 bg-primary" />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1.5 }}
-        className="absolute bottom-12 right-6 md:right-12 flex flex-col items-center gap-4 hidden sm:flex"
+        className="absolute bottom-20 right-6 hidden flex-col items-center gap-4 md:right-12 lg:flex"
       >
-        <div className="w-[1px] h-20 bg-gradient-to-b from-primary/50 to-transparent"></div>
-        <span className="font-mono text-primary text-xs uppercase tracking-widest" style={{ writingMode: 'vertical-rl' }}>SCROLL</span>
+        <div className="h-20 w-px bg-gradient-to-b from-primary/50 to-transparent" />
+        <span className="font-mono text-xs uppercase tracking-widest text-primary" style={{ writingMode: 'vertical-rl' }}>
+          Scroll
+        </span>
       </motion.div>
     </section>
   )

@@ -32,16 +32,10 @@
   --glow-accent: #222222;
 }
 
-@font-face {
-  font-family: 'Satoshi';
-  src: url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap');
-  font-display: swap;
-}
-
 @theme inline {
-  --font-sans: 'Inter', 'Satoshi', system-ui, sans-serif;
+  --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-mono: var(--font-mono), 'Geist Mono', monospace;
-  --font-display: 'Inter', 'Satoshi', system-ui, sans-serif;
+  --font-display: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-anton: var(--font-anton), sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -331,4 +325,125 @@
 .tilt-card {
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ------------------------------------------------------------------ */
+/* v3 additions                                                        */
+/* ------------------------------------------------------------------ */
+
+/* Outlined display type */
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(209, 255, 0, 0.55);
+  transition: -webkit-text-stroke-color 0.5s;
+}
+.group:hover .text-outline {
+  -webkit-text-stroke-color: #d1ff00;
+}
+.text-outline-strong {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(209, 255, 0, 0.6);
+  transition: -webkit-text-stroke-color 0.5s;
+}
+.text-outline-strong:hover {
+  -webkit-text-stroke-color: #d1ff00;
+}
+
+/* Seamless marquee: content is duplicated, so -50% loops perfectly */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee {
+  animation: marquee 45s linear infinite;
+}
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Skills orbit: rings spin, items counter-spin to stay upright */
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.orbit {
+  animation: orbit-spin var(--orbit-duration, 60s) linear infinite;
+  pointer-events: none;
+}
+.orbit-reverse {
+  animation-direction: reverse;
+}
+.orbit-item {
+  animation: orbit-spin var(--orbit-duration, 60s) linear infinite reverse;
+  pointer-events: auto;
+}
+.orbit-reverse .orbit-item {
+  animation-direction: normal;
+}
+.orbit-system:hover .orbit,
+.orbit-system:hover .orbit-item {
+  animation-play-state: paused;
+}
+
+/* Light sweep across highlight cards */
+@keyframes sheen {
+  0% { transform: translateX(-120%) skewX(-20deg); }
+  60%, 100% { transform: translateX(220%) skewX(-20deg); }
+}
+.sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(209, 255, 0, 0.08), transparent);
+  animation: sheen 6s ease-in-out infinite;
+}
+
+/* Hero cursor orbs: colour cycling handled in CSS instead of JS */
+@keyframes hue-cycle {
+  from { filter: blur(100px) hue-rotate(0deg); }
+  to { filter: blur(100px) hue-rotate(360deg); }
+}
+.hero-orb-a {
+  background: radial-gradient(circle, rgba(209, 255, 0, 0.35) 0%, transparent 70%);
+  animation: hue-cycle 12s linear infinite;
+}
+.hero-orb-b {
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.3) 0%, transparent 70%);
+  animation: hue-cycle 16s linear infinite reverse;
+}
+
+/* cmdk palette accents */
+[cmdk-item][data-selected='true'] {
+  background: rgba(209, 255, 0, 0.1);
+  color: #fff;
+}
+[cmdk-group-heading] {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px !important;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

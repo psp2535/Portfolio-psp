@@ -1,39 +1,60 @@
 'use client'
 
-import { useEffect, useRef, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, type ReactNode } from 'react'
 import Lenis from 'lenis'
 
-interface SmoothScrollProviderProps {
-  children: ReactNode
-}
+type ScrollTo = (target: string | number, opts?: { offset?: number }) => void
 
-export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
+const ScrollContext = createContext<ScrollTo>(() => {})
+
+/** Scroll to a section id ("#about" / "about") or a pixel offset, Lenis-aware. */
+export const useScrollTo = () => useContext(ScrollContext)
+
+export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-    })
+    // Respect users who prefer reduced motion: native scrolling only.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5,
+    })
     lenisRef.current = lenis
 
-    function raf(time: number) {
+    let frame = 0
+    const raf = (time: number) => {
       lenis.raf(time)
-      requestAnimationFrame(raf)
+      frame = requestAnimationFrame(raf)
     }
-
-    requestAnimationFrame(raf)
+    frame = requestAnimationFrame(raf)
 
     return () => {
+      cancelAnimationFrame(frame)
       lenis.destroy()
+      lenisRef.current = null
     }
   }, [])
 
-  return <>{children}</>
+  const scrollTo = useCallback<ScrollTo>((target, opts) => {
+    const offset = opts?.offset ?? -80
+    let el: HTMLElement | number | null = null
+    if (typeof target === 'number') el = target
+    else el = document.getElementById(target.replace(/^#/, ''))
+    if (el === null) return
+
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(el, { offset: typeof el === 'number' ? 0 : offset })
+    } else if (typeof el === 'number') {
+      window.scrollTo({ top: el, behavior: 'smooth' })
+    } else {
+      const top = el.getBoundingClientRect().top + window.scrollY + offset
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
+  }, [])
+
+  return <ScrollContext.Provider value={scrollTo}>{children}</ScrollContext.Provider>
 }
