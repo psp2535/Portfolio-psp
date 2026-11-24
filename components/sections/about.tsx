@@ -65,7 +65,7 @@ export function About() {
               </p>
               <p>
                 I&apos;m also a co-author at <span className="text-white">{publication.venue}</span>, and I keep my problem-solving sharp
-                on LeetCode and CodeChef.
+                on LeetCode, CodeChef and Codeforces.
               </p>
             </motion.div>
 

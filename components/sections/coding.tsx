@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { ArrowUpRight, Star } from 'lucide-react'
-import { SiCodechef, SiLeetcode } from 'react-icons/si'
+import { SiCodechef, SiCodeforces, SiLeetcode } from 'react-icons/si'
 import { Counter } from '@/components/ui/counter'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { codingProfiles } from '@/lib/data'
@@ -18,16 +18,17 @@ const meta: Record<
     tierTo: 1600,
     nextTier: '3★',
     extra: (
-      <div className="flex items-center gap-1" aria-label="2 star coder">
+      <div className="flex shrink-0 items-center gap-0.5 pb-2" aria-label="2 star coder">
         {[0, 1].map((i) => (
-          <Star key={i} className="h-4 w-4 fill-[#C08B5C] text-[#C08B5C]" />
+          <Star key={i} className="h-3.5 w-3.5 fill-[#C08B5C] text-[#C08B5C]" />
         ))}
         {[0, 1, 2, 3, 4].map((i) => (
-          <Star key={i} className="h-4 w-4 text-white/15" />
+          <Star key={i} className="h-3.5 w-3.5 text-white/15" />
         ))}
       </div>
     ),
   },
+  Codeforces: { icon: SiCodeforces, tierFrom: 0, tierTo: 1200, nextTier: 'Pupil' },
 }
 
 export function Coding() {
@@ -42,7 +43,7 @@ export function Coding() {
           description="Rated contests keep my DSA fundamentals sharp, and those fundamentals carry straight into routing heuristics and audit-engine performance."
         />
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {codingProfiles.map((p, i) => {
             const m = meta[p.platform]
             const Icon = m.icon
@@ -58,7 +59,7 @@ export function Coding() {
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.8, delay: i * 0.15 }}
                 whileHover={{ y: -6 }}
-                className="group relative block overflow-hidden border border-white/[0.08] bg-[#070707] p-7 transition-colors md:p-9"
+                className={`group relative block overflow-hidden border border-white/[0.08] bg-[#070707] p-7 transition-colors md:p-8 ${i === 2 ? 'md:col-span-2 lg:col-span-1' : ''}`}
                 style={{ ['--c' as string]: p.color }}
               >
                 <div
@@ -89,7 +90,7 @@ export function Coding() {
                   <div className="mb-2 flex items-end justify-between gap-4">
                     <Counter
                       value={p.headline.value}
-                      className="font-[family-name:var(--font-anton)] text-7xl leading-none md:text-8xl"
+                      className="font-[family-name:var(--font-anton)] text-7xl leading-none"
                     />
                     {m.extra}
                   </div>

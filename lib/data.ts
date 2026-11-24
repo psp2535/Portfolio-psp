@@ -34,6 +34,7 @@ export const socials = {
   instagram: 'https://www.instagram.com/pathange_saipranav_325',
   leetcode: 'https://leetcode.com/u/Suraj2304/',
   codechef: 'https://www.codechef.com/users/saipranav_974',
+  codeforces: 'https://codeforces.com/profile/psp7',
   email: 'mailto:saipranav974@gmail.com',
 }
 
@@ -297,10 +298,10 @@ export const codingProfiles = [
     handle: 'Suraj2304',
     href: 'https://leetcode.com/u/Suraj2304/',
     color: '#FFA116',
-    headline: { value: 1567, label: 'contest rating' },
+    headline: { value: 1590, label: 'contest rating' },
     stats: [
       { value: '360+', label: 'problems solved' },
-      { value: '16', label: 'rated contests' },
+      { value: '17', label: 'rated contests' },
     ],
   },
   {
@@ -312,6 +313,17 @@ export const codingProfiles = [
     stats: [
       { value: '#435', label: 'best global rank' },
       { value: '22', label: 'rated contests' },
+    ],
+  },
+  {
+    platform: 'Codeforces',
+    handle: 'psp7',
+    href: 'https://codeforces.com/profile/psp7',
+    color: '#1F8ACB',
+    headline: { value: 1158, label: 'contest rating · newbie' },
+    stats: [
+      { value: '58', label: 'problems solved' },
+      { value: '5', label: 'rated contests' },
     ],
   },
 ]

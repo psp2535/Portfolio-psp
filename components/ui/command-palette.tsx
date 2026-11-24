@@ -142,6 +142,9 @@ export function CommandPalette() {
           <CommandItem onSelect={() => run(() => openUrl(socials.codechef))}>
             <Trophy /> CodeChef
           </CommandItem>
+          <CommandItem onSelect={() => run(() => openUrl(socials.codeforces))}>
+            <Code2 /> Codeforces
+          </CommandItem>
           <CommandItem onSelect={() => run(() => openUrl(socials.twitter))}>
             <Twitter /> X / Twitter
           </CommandItem>

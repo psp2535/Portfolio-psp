@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { ArrowUpRight, Check, CheckCircle2, Copy, Github, Linkedin, Loader2, Send, Twitter } from 'lucide-react'
-import { SiCodechef, SiLeetcode } from 'react-icons/si'
+import { SiCodechef, SiCodeforces, SiLeetcode } from 'react-icons/si'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { profile, RESUME_PATH, socials } from '@/lib/data'
 
@@ -17,6 +17,7 @@ const links = [
   { name: 'LinkedIn', icon: Linkedin, href: socials.linkedin, handle: 'pathangesaipranav' },
   { name: 'LeetCode', icon: SiLeetcode, href: socials.leetcode, handle: 'Suraj2304' },
   { name: 'CodeChef', icon: SiCodechef, href: socials.codechef, handle: 'saipranav_974' },
+  { name: 'Codeforces', icon: SiCodeforces, href: socials.codeforces, handle: 'psp7' },
   { name: 'X / Twitter', icon: Twitter, href: socials.twitter, handle: 'psp25305' },
 ]
 

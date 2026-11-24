@@ -16,8 +16,9 @@
 - Amazon ML Summer School 2026: Selected
 
 ## Competitive programming
-- LeetCode (https://leetcode.com/u/Suraj2304/): 360+ problems, contest rating 1567
+- LeetCode (https://leetcode.com/u/Suraj2304/): 360+ problems, contest rating 1590 across 17 rated contests
 - CodeChef (https://www.codechef.com/users/saipranav_974): 2★, max rating 1451
+- Codeforces (https://codeforces.com/profile/psp7): rating 1158, 58 problems solved
 
 ## Contact
 - Email: saipranav974@gmail.com

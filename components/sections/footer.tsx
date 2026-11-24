@@ -73,6 +73,7 @@ export function Footer() {
               <li><a className="hover:text-primary" href={socials.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
               <li><a className="hover:text-primary" href={socials.leetcode} target="_blank" rel="noopener noreferrer">LeetCode</a></li>
               <li><a className="hover:text-primary" href={socials.codechef} target="_blank" rel="noopener noreferrer">CodeChef</a></li>
+              <li><a className="hover:text-primary" href={socials.codeforces} target="_blank" rel="noopener noreferrer">Codeforces</a></li>
               <li><a className="hover:text-primary" href={RESUME_PATH} target="_blank" rel="noopener noreferrer">Resume</a></li>
               <li><a className="hover:text-primary" href={socials.email}>Email</a></li>
             </ul>

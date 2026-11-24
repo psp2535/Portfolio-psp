@@ -21,6 +21,7 @@ const marqueeItems = [
   { name: 'LINKEDIN', url: socials.linkedin },
   { name: 'LEETCODE', url: socials.leetcode },
   { name: 'CODECHEF', url: socials.codechef },
+  { name: 'CODEFORCES', url: socials.codeforces },
   { name: 'GMAIL', url: socials.email },
   { name: 'TWITTER', url: socials.twitter },
 ]
