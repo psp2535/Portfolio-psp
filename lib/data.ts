@@ -16,13 +16,6 @@ export const profile = {
   location: 'Gwalior, India',
   email: 'saipranav974@gmail.com',
   phone: '+91-8977539901',
-  roles: [
-    'AI Engineer',
-    'Full-Stack Developer',
-    'Adobe Hackathon Grand Finalist',
-    'Optimization & Routing Nerd',
-    'MERN Builder',
-  ],
   summary:
     'Integrated B.Tech + M.Tech (IT) student at ABV-IIITM Gwalior building AI-first products: website audit engines for AI search, ant-colony vehicle routing, and MERN platforms used by small retailers.',
 }

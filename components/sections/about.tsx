@@ -97,17 +97,14 @@ export function About() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="group relative overflow-hidden border border-white/10 bg-white/[0.03] p-7 md:p-8"
             >
-              <img
-                src="/iiitm-logo.png"
-                alt=""
-                aria-hidden="true"
-                className="absolute -right-4 -top-4 h-32 w-32 object-contain opacity-15 transition-all duration-500 group-hover:scale-110 group-hover:opacity-30"
-              />
+              <div className="absolute right-6 top-6 flex h-16 w-16 items-center justify-center bg-white p-1.5 shadow-[0_0_30px_rgba(209,255,0,0.15)] transition-transform duration-500 group-hover:scale-105 md:right-8 md:top-8">
+                <img src="/iiitm-logo.png" alt="ABV-IIITM Gwalior logo" className="h-full w-full object-contain" />
+              </div>
               <div className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary">
                 <GraduationCap className="h-4 w-4" /> Education
               </div>
-              <h3 className="mb-1 text-2xl font-medium text-white">{education.short}</h3>
-              <p className="mb-1 text-sm text-white/60">{education.school}</p>
+              <h3 className="mb-1 pr-20 text-2xl font-medium text-white">{education.short}</h3>
+              <p className="mb-1 pr-20 text-sm text-white/60">{education.school}</p>
               <p className="text-sm uppercase tracking-wide text-muted-foreground">{education.degree}</p>
 
               <div className="my-6 grid grid-cols-2 gap-px border border-white/10 bg-white/10">

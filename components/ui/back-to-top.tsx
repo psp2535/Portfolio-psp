@@ -62,7 +62,7 @@ export function BackToTop() {
             {/* Magnetic Icon */}
             <motion.div className="relative z-10 text-white group-hover:text-primary transition-colors flex flex-col items-center">
               <ArrowUp className="w-6 h-6 mb-0.5 group-hover:-translate-y-1 transition-transform" />
-              <span className="font-mono text-[8px] tracking-tighter uppercase font-bold">Elevate</span>
+              <span className="hidden md:block font-mono text-[8px] tracking-tighter uppercase font-bold">Elevate</span>
             </motion.div>
 
             {/* Background Glow */}

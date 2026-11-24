@@ -97,7 +97,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="overflow-x-hidden bg-black">
+    <html lang="en" className="relative overflow-x-hidden bg-black">
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${anton.variable} overflow-x-hidden font-sans antialiased`}>
         <script
           type="application/ld+json"

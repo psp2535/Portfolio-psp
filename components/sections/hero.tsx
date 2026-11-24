@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import {
-  AnimatePresence,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -10,7 +9,7 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import { ArrowRight, Command, Sparkles } from 'lucide-react'
+import { ArrowRight, Command } from 'lucide-react'
 import { Counter } from '@/components/ui/counter'
 import { openCommandPalette } from '@/components/ui/command-palette'
 import { useScrollTo } from '@/components/providers/smooth-scroll-provider'
@@ -50,12 +49,6 @@ export function Hero() {
   const orbBY = useTransform(slowY, (v) => v - 250)
   const tiltX = useSpring(useTransform(ny, [-0.5, 0.5], [8, -8]), { stiffness: 40, damping: 20 })
   const tiltY = useSpring(useTransform(nx, [-0.5, 0.5], [-8, 8]), { stiffness: 40, damping: 20 })
-
-  const [roleIndex, setRoleIndex] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => setRoleIndex((i) => (i + 1) % profile.roles.length), 3200)
-    return () => clearInterval(t)
-  }, [])
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (reduce) return
@@ -112,20 +105,6 @@ export function Hero() {
           <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">| {profile.location}</span>
         </motion.div>
 
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          onClick={() => scrollTo('achievements')}
-          className="group mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-primary/30 bg-primary/[0.06] py-1.5 pl-2 pr-4 text-left text-xs text-white/80 transition-colors hover:border-primary/60 hover:bg-primary/10 md:text-sm"
-        >
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-primary px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black">
-            <Sparkles className="h-3 w-3" /> New
-          </span>
-          <span className="truncate">Grand Finalist at Adobe University Hackathon 2026 · Top 8 of 80,000+ teams</span>
-          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-primary transition-transform group-hover:translate-x-1" />
-        </motion.button>
-
         {/* Name */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -168,35 +147,15 @@ export function Hero() {
           </h1>
         </motion.div>
 
-        {/* Tagline + role */}
-        <motion.div
+        {/* Tagline */}
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="mb-10 max-w-3xl space-y-5"
+          className="mb-10 max-w-3xl font-mono text-base text-muted-foreground sm:text-lg"
         >
-          <p className="font-mono text-base text-muted-foreground sm:text-lg">
-            <span className="text-primary">//</span> {profile.tagline}
-          </p>
-          <div className="flex flex-wrap items-center gap-x-3 text-xl font-light text-muted-foreground sm:text-2xl">
-            <span className="shrink-0">I am</span>
-            <div className="relative flex h-[2.2em] min-w-[260px] items-center overflow-hidden md:min-w-[520px]">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={profile.roles[roleIndex]}
-                  initial={{ rotateX: -90, opacity: 0, y: 20 }}
-                  animate={{ rotateX: 0, opacity: 1, y: 0 }}
-                  exit={{ rotateX: 90, opacity: 0, y: -20 }}
-                  transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
-                  className="absolute left-0 origin-left whitespace-nowrap font-[family-name:var(--font-anton)] uppercase tracking-[0.06em] text-primary"
-                >
-                  {/^[AEIOU]/i.test(profile.roles[roleIndex]) ? 'an ' : 'a '}
-                  {profile.roles[roleIndex]}
-                </motion.span>
-              </AnimatePresence>
-            </div>
-          </div>
-        </motion.div>
+          <span className="text-primary">//</span> {profile.tagline}
+        </motion.p>
 
         {/* CTAs */}
         <motion.div
